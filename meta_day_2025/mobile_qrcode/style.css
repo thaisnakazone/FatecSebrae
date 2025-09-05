@@ -1,11 +1,14 @@
+/* Estilo base */
 body {
   font-family: Arial, sans-serif;
   text-align: center;
   background-color: #f0f0f0;
   margin: 0;
   padding: 20px;
+  box-sizing: border-box; /* garante que padding não estoure a largura */
 }
 
+/* Botões */
 button {
   margin: 5px;
   padding: 10px 20px;
@@ -15,13 +18,46 @@ button {
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
+  max-width: 100%; /* evita que ultrapasse a tela */
 }
 
 button:hover {
   background-color: #1976D2;
 }
 
+/* Inputs */
 input {
   padding: 8px;
   font-size: 16px;
+  max-width: 100%; /* evita que ultrapasse a tela */
+  box-sizing: border-box;
+}
+
+/* Imagens fluidas */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  h1, h3, p {
+    text-align: center;
+  }
+
+  button, input {
+    width: 100%; /* ocupa toda a largura no mobile */
+    font-size: 1rem;
+  }
+
+  #botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
 }
