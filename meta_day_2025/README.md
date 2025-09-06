@@ -35,7 +35,7 @@ Aplicativo desenvolvido em **Python (PyQt5)** para rodar em computadores.
 2. Instale as dependências: pip install PyQt5 pyttsx3
 3. Rode o arquivo principal: python metaday_lia.py
 
-## 📦 Versão Desktop – Executável
+## 📦 [Versão Desktop – Executável](./Versao%20Desktop%20-%20Executavel)
 
 ![Demonstração Executável](./desktop_executavel/screenshot_executavel.png)
 
