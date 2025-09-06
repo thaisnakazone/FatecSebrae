@@ -36,6 +36,11 @@ img {
   height: auto;
 }
 
+/* Tamanho padrão (desktop) */
+#avatar {
+  width: 200px;
+}
+
 #tela-nome, #tela-menu {
   display: flex;
   flex-direction: column;
@@ -52,6 +57,12 @@ img {
     text-align: center;
   }
 
+  /* Tamanho menor no celular */
+  @media (max-width: 768px) {
+    #avatar {
+      width: 150px; /* ou o valor que achar melhor */
+    }
+  }
   /* Botões em 2 colunas */
   #botoes {
     display: grid;
