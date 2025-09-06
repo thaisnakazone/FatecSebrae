@@ -1,14 +1,13 @@
-/* Estilo base */
+/* ===== Estilo base ===== */
 body {
   font-family: Arial, sans-serif;
   text-align: center;
   background-color: #f0f0f0;
   margin: 0;
   padding: 20px;
-  box-sizing: border-box; /* garante que padding não estoure a largura */
+  box-sizing: border-box;
 }
 
-/* Botões */
 button {
   margin: 5px;
   padding: 10px 20px;
@@ -18,28 +17,32 @@ button {
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
-  max-width: 100%; /* evita que ultrapasse a tela */
+  max-width: 100%;
 }
 
 button:hover {
   background-color: #1976D2;
 }
 
-/* Inputs */
 input {
   padding: 8px;
   font-size: 16px;
-  max-width: 100%; /* evita que ultrapasse a tela */
+  max-width: 100%;
   box-sizing: border-box;
 }
 
-/* Imagens fluidas */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* Ajustes para telas pequenas */
+#tela-nome, #tela-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== Ajustes para telas pequenas ===== */
 @media (max-width: 768px) {
   body {
     padding: 10px;
@@ -49,15 +52,32 @@ img {
     text-align: center;
   }
 
-  button, input {
-    width: 100%; /* ocupa toda a largura no mobile */
-    font-size: 1rem;
+  /* Botões em 2 colunas */
+  #botoes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 320px;
+    margin: 0 auto;
   }
 
-  #botoes {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
+  #botoes button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  /* Último botão centralizado e com largura igual */
+  #botoes button:last-child {
+    grid-column: span 2;      /* ocupa as duas colunas */
+    justify-self: center;     /* centraliza */
+    width: 100%;               /* ocupa toda a largura disponível */
+    max-width: 150px;          /* mesma largura dos outros */
+  }
+
+  input {
+    width: 100%;
+    max-width: 300px;
+    font-size: 1rem;
   }
 }
