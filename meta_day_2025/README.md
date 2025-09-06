@@ -37,7 +37,7 @@ Aplicativo desenvolvido em **Python (PyQt5)** para rodar em computadores.
 
 ## 📦 Versão Desktop – Executável
 
-![Demonstração Executável](./meta_day_2025/desktop_executavel/screenshot_executavel.png)
+![Demonstração Executável](./desktop_executavel/screenshot_executavel.png)
 
 Versão compilada do aplicativo desktop, pronta para rodar sem precisar instalar Python ou bibliotecas.
 
