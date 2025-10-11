@@ -99,9 +99,9 @@ img {
   }
 
   [vw-plugin-wrapper] {
-    bottom: 140px !important; /* sobe a janela do avatar */
-    right: 5px !important;
-    transform: scale(0.8);   /* deixa um pouco menor */
+    bottom: 150px !important; /* sobe a janela do avatar */
+    right: -5px !important;
+    transform: scale(0.7);   /* deixa um pouco menor */
   }
 
 }
