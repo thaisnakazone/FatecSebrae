@@ -37,5 +37,20 @@
   new window.VLibras.Widget('https://vlibras.gov.br/app');
 </script>
 
+<script>
+  // Espera o carregamento da página
+  document.addEventListener("DOMContentLoaded", function () {
+    // Seleciona o botão do VLibras
+    const vlibrasBtn = document.querySelector("[vw-access-button]");
+
+    if (vlibrasBtn) {
+      vlibrasBtn.addEventListener("click", function () {
+        // Alterna uma classe no body quando o botão é clicado
+        document.body.classList.toggle("vlibras-ativo");
+      });
+    }
+  });
+</script>
+
 </body>
 </html>

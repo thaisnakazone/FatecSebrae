@@ -57,13 +57,19 @@ img {
     text-align: center;
   }
 
-  /* Tamanho menor no celular */
-  @media (max-width: 768px) {
-    #avatar {
-      width: 150px;
-      margin-right: 80px;
-    }
+  /* Padrão: avatar centralizado */
+  #avatar {
+    width: 150px;
+    margin: 0 auto; /* centralizado */
+    display: block;
   }
+
+  /* Quando o VLibras estiver ativo */
+  body.vlibras-ativo #avatar {
+    margin-right: 80px; /* empurra para a esquerda */
+    margin-left: auto;  /* garante alinhamento */
+  }
+
   /* Botões em 2 colunas */
   #botoes {
     display: grid;
