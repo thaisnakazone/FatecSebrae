@@ -57,26 +57,12 @@ img {
     text-align: center;
   }
 
-  /* Padrão: avatar centralizado */
-  #avatar {
-    width: 150px;
-    margin: 0 auto; /* centralizado */
-    display: block;
+  /* Tamanho menor no celular */
+  @media (max-width: 768px) {
+    #avatar {
+      width: 150px; /* ou o valor que achar melhor */
+    }
   }
-
-  /* Quando o VLibras estiver ativo */
-  body.vlibras-ativo #tela-nome,
-  body.vlibras-ativo #tela-menu {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* joga o avatar para a esquerda */
-  }
-
-  body.vlibras-ativo #avatar {
-    margin-left: 20px; /* só um respiro da borda */
-    margin-right: 0;
-  }
-
   /* Botões em 2 colunas */
   #botoes {
     display: grid;
@@ -105,28 +91,4 @@ img {
     max-width: 300px;
     font-size: 1rem;
   }
-
-  [vw-access-button] {
-    bottom: 100px !important; /* sobe o botão para não cobrir botões fixos */
-    right: 5px !important;
-    transform: scale(0.9);   /* deixa um pouco menor */
-  }
-
-  [vw-plugin-wrapper] {
-    width: 300px !important;   /* aumenta a largura */
-    max-width: 95vw !important; /* garante que não ultrapasse a tela */
-    bottom: 200px !important; /* sobe a janela do avatar */
-    right: -50px !important;
-    transform: scale(0.65);   /* deixa um pouco menor */
-  }
-
-  /* Garante que mesmo com o avatar à esquerda a janela mantenha a largura */
-  body.vlibras-ativo [vw-plugin-wrapper] {
-    width: 300px !important;   /* aumenta a largura */
-    max-width: 95vw !important; /* garante que não ultrapasse a tela */
-    bottom: 200px !important; /* sobe a janela do avatar */
-    right: -50px !important;
-    transform: scale(0.65);   /* deixa um pouco menor */
-  }
-
 }
