@@ -120,4 +120,13 @@ img {
     transform: scale(0.65);   /* deixa um pouco menor */
   }
 
+  /* Garante que mesmo com o avatar à esquerda a janela mantenha a largura */
+  body.vlibras-ativo [vw-plugin-wrapper] {
+    width: 380px !important;   /* aumenta a largura */
+    max-width: 95vw !important; /* garante que não ultrapasse a tela */
+    bottom: 200px !important; /* sobe a janela do avatar */
+    right: -30px !important;
+    transform: scale(0.65);   /* deixa um pouco menor */
+  }
+
 }
