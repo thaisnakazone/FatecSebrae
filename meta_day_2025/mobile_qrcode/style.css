@@ -65,10 +65,16 @@ img {
   }
 
   /* Quando o VLibras estiver ativo */
+  body.vlibras-ativo #tela-nome,
+  body.vlibras-ativo #tela-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* joga o avatar para a esquerda */
+  }
+
   body.vlibras-ativo #avatar {
-    float: left;       /* força o avatar para a esquerda */
-    margin-left: 20px; /* dá um respiro da borda */
-    margin-right: 0;   /* remove o auto centralizado */
+    margin-left: 20px; /* só um respiro da borda */
+    margin-right: 0;
   }
 
   /* Botões em 2 colunas */
