@@ -141,9 +141,11 @@ img {
   }
 
   [vw-plugin-wrapper] {
-    bottom: 200px !important;
+    width: 300px !important;
+    max-width: 95vw !important;
+    bottom: 180px !important;
     right: -30px !important;
-    transform: scale(0.7);
+    transform: scale(0.65);
     z-index: 5 !important;
   }
 }
