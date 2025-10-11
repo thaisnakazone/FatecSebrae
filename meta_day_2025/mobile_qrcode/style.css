@@ -116,7 +116,7 @@ img {
     width: 300px !important;   /* aumenta a largura */
     max-width: 95vw !important; /* garante que não ultrapasse a tela */
     bottom: 200px !important; /* sobe a janela do avatar */
-    right: -30px !important;
+    right: -50px !important;
     transform: scale(0.65);   /* deixa um pouco menor */
   }
 
@@ -125,7 +125,7 @@ img {
     width: 300px !important;   /* aumenta a largura */
     max-width: 95vw !important; /* garante que não ultrapasse a tela */
     bottom: 200px !important; /* sobe a janela do avatar */
-    right: -30px !important;
+    right: -50px !important;
     transform: scale(0.65);   /* deixa um pouco menor */
   }
 
