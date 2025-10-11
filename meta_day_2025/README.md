@@ -6,7 +6,7 @@ Assistente virtual desenvolvida para o **Meta Day Fatec Sebrae 2025**, com três
 
 ## 📱 [Versão Mobile – QR Code](./Versao%20Mobile%20-%20QR%20Code)
 
-![Demonstração Mobile](./meta_day_2025/mobile_qrcode/screenshot_mobile.png)
+![Demonstração Mobile](./mobile_qrcode/screenshot_mobile.png)
 
 
 Interface web responsiva, pensada para ser acessada diretamente pelo celular ao escanear um QR Code no evento.
@@ -20,7 +20,7 @@ Interface web responsiva, pensada para ser acessada diretamente pelo celular ao 
 
 ## 💻 [Versão Desktop – Código Python](./Versao%20Desktop%20-%20Codigo%20Python)
 
-![Demonstração Python](./meta_day_2025/desktop_python/screenshot_python.png)
+![Demonstração Python](./desktop_python/screenshot_python.png)
 
 
 Aplicativo desenvolvido em **Python (PyQt5)** para rodar em computadores.
@@ -35,9 +35,9 @@ Aplicativo desenvolvido em **Python (PyQt5)** para rodar em computadores.
 2. Instale as dependências: pip install PyQt5 pyttsx3
 3. Rode o arquivo principal: python metaday_lia.py
 
-## 📦 Versão Desktop – Executável
+## 📦 [Versão Desktop – Executável](./Versao%20Desktop%20-%20Executavel)
 
-![Demonstração Executável](./meta_day_2025/desktop_executavel/screenshot_executavel.png)
+![Demonstração Executável](./desktop_executavel/screenshot_executavel.png)
 
 Versão compilada do aplicativo desktop, pronta para rodar sem precisar instalar Python ou bibliotecas.
 
