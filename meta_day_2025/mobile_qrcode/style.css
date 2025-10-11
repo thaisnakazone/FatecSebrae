@@ -155,7 +155,7 @@ img {
   }
 
   body.tela-nome [vw-plugin-wrapper] {
-    bottom: -20px !important;
+    bottom: -40px !important;
     right: 10px !important;
     transform: scaleX(1.1) scaleY(0.9) !important;
   }
@@ -170,7 +170,7 @@ img {
     max-width: 95vw !important;
     bottom: 270px !important;
     right: 0px !important;
-    transform: scaleX(0.95) scaleY(0.65);
+    transform: scaleX(0.95) scaleY(0.68);
     transform-origin: bottom right; /* garante que cresça a partir do canto */
     z-index: 5 !important;
   }
