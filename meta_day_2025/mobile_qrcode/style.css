@@ -66,8 +66,9 @@ img {
 
   /* Quando o VLibras estiver ativo */
   body.vlibras-ativo #avatar {
-    margin-right: 80px; /* empurra para a esquerda */
-    margin-left: auto;  /* garante alinhamento */
+    float: left;       /* força o avatar para a esquerda */
+    margin-left: 20px; /* dá um respiro da borda */
+    margin-right: 0;   /* remove o auto centralizado */
   }
 
   /* Botões em 2 colunas */
