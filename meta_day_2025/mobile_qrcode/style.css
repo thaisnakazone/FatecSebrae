@@ -60,7 +60,9 @@ img {
   /* Tamanho menor no celular */
   @media (max-width: 768px) {
     #avatar {
-      width: 150px; /* ou o valor que achar melhor */
+      width: 150px;
+      margin-right: 60px;
+      margin-right: 80px;
     }
   }
   /* Botões em 2 colunas */
@@ -91,4 +93,20 @@ img {
     max-width: 300px;
     font-size: 1rem;
   }
+
+  [vw-access-button] {
+    bottom: 80px !important; /* sobe o botão para não cobrir botões fixos */
+    bottom: 100px !important; /* sobe o botão para não cobrir botões fixos */
+    right: 5px !important;
+    transform: scale(0.9);   /* deixa um pouco menor */
+  }
+
+  [vw-plugin-wrapper] {
+    bottom: 170px !important; /* sobe a janela do avatar */
+    right: -20px !important;
+    bottom: 200px !important; /* sobe a janela do avatar */
+    right: -30px !important;
+    transform: scale(0.7);   /* deixa um pouco menor */
+  }
+
 }
