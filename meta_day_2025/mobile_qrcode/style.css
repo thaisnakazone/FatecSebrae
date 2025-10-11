@@ -60,7 +60,8 @@ img {
   /* Tamanho menor no celular */
   @media (max-width: 768px) {
     #avatar {
-      width: 150px; /* ou o valor que achar melhor */
+      width: 150px;
+      margin-right: 60px;
     }
   }
   /* Botões em 2 colunas */
@@ -93,7 +94,7 @@ img {
   }
 
   [vw-access-button] {
-    bottom: 50px !important; /* sobe o botão para não cobrir botões fixos */
+    bottom: 80px !important; /* sobe o botão para não cobrir botões fixos */
     right: 5px !important;
     transform: scale(0.9);   /* deixa um pouco menor */
   }
