@@ -61,7 +61,7 @@ img {
   @media (max-width: 768px) {
     #avatar {
       width: 150px;
-      margin-right: 60px;
+      margin-right: 80px;
     }
   }
   /* Botões em 2 colunas */
@@ -94,7 +94,7 @@ img {
   }
 
   [vw-access-button] {
-    bottom: 80px !important; /* sobe o botão para não cobrir botões fixos */
+    bottom: 100px !important; /* sobe o botão para não cobrir botões fixos */
     right: 5px !important;
     transform: scale(0.9);   /* deixa um pouco menor */
   }
