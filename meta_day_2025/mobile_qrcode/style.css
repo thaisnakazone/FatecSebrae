@@ -8,6 +8,26 @@ body {
   box-sizing: border-box;
 }
 
+/* VLibras na tela de nome */
+body.tela-nome [vw-plugin-wrapper] {
+  bottom: 20px !important;
+  right: 10px !important;
+  transform: scale(0.8) !important;
+}
+
+/* Avatar centralizado por padrão */
+body.tela-menu #avatar {
+  margin: 0 auto;
+  display: block;
+}
+
+/* Avatar à esquerda só quando VLibras ativo */
+body.tela-menu.vlibras-ativo #avatar {
+  align-self: flex-start;
+  margin-left: 20px;
+  margin-right: 0;
+}
+
 #frase {
   color: #F76711;
   font-size: 17px;
@@ -132,6 +152,12 @@ img {
     width: 100%;
     max-width: 300px;
     font-size: 1rem;
+  }
+
+  body.tela-nome [vw-plugin-wrapper] {
+    bottom: 20px !important;
+    right: 10px !important;
+    transform: scale(0.8) !important;
   }
 
   [vw-access-button] {

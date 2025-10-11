@@ -27,6 +27,10 @@ function iniciar() {
   document.getElementById('tela-nome').style.display = 'none';
   document.getElementById('tela-menu').style.display = 'block';
 
+  // troca a classe do body
+  document.body.classList.remove("tela-nome");
+  document.body.classList.add("tela-menu");
+
   document.getElementById('saudacao').textContent =
     `Olá, ${nome}! Eu sou a Lia. É um prazer ter você aqui conosco no Meta Day Fatec Sebrae!`;
 
@@ -94,3 +98,26 @@ function pararBoca() {
   clearInterval(animacao);
   document.getElementById('avatar').src = 'avatar_fechada.png';
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const vlibrasBtn = document.querySelector("[vw-access-button]");
+  const pluginWrapper = document.querySelector("[vw-plugin-wrapper]");
+
+  if (vlibrasBtn) {
+    vlibrasBtn.addEventListener("click", () => {
+      // Dá um pequeno delay para o VLibras abrir
+      setTimeout(() => {
+        document.body.classList.add("vlibras-ativo");
+      }, 500);
+    });
+  }
+
+  if (pluginWrapper) {
+    const observer = new MutationObserver(() => {
+      if (pluginWrapper.style.display === "none") {
+        document.body.classList.remove("vlibras-ativo");
+      }
+    });
+    observer.observe(pluginWrapper, { attributes: true, attributeFilter: ["style"] });
+  }
+});
