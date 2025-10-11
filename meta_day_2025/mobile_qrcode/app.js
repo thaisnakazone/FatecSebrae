@@ -99,13 +99,13 @@ function pararBoca() {
   document.getElementById('avatar').src = 'avatar_fechada.png';
 }
 
+// Observa o VLibras
 document.addEventListener("DOMContentLoaded", () => {
   const vlibrasBtn = document.querySelector("[vw-access-button]");
   const pluginWrapper = document.querySelector("[vw-plugin-wrapper]");
 
   if (vlibrasBtn) {
     vlibrasBtn.addEventListener("click", () => {
-      // Dá um pequeno delay para o VLibras abrir
       setTimeout(() => {
         document.body.classList.add("vlibras-ativo");
       }, 500);
@@ -114,10 +114,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (pluginWrapper) {
     const observer = new MutationObserver(() => {
-      if (pluginWrapper.style.display === "none") {
+      // Verifica se o wrapper está visível na tela
+      const rect = pluginWrapper.getBoundingClientRect();
+      const isHidden = rect.width === 0 || rect.height === 0 || pluginWrapper.style.display === "none";
+
+      if (isHidden) {
         document.body.classList.remove("vlibras-ativo");
+      } else {
+        document.body.classList.add("vlibras-ativo");
       }
     });
-    observer.observe(pluginWrapper, { attributes: true, attributeFilter: ["style"] });
+
+    // Observa qualquer mudança de atributo ou classe
+    observer.observe(pluginWrapper, { attributes: true, attributeFilter: ["style", "class"] });
   }
+
 });
