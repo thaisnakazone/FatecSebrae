@@ -142,7 +142,7 @@ img {
 
   [vw-plugin-wrapper] {
     max-width: 95vw !important;
-    bottom: 150px !important;
+    bottom: 180px !important;
     right: 0px !important;
     transform: scaleX(1.1) scaleY(0.7);
     transform-origin: bottom right; /* garante que cresça a partir do canto */
