@@ -157,7 +157,7 @@ img {
   body.tela-nome [vw-plugin-wrapper] {
     bottom: -20px !important;
     right: 10px !important;
-    transform: scaleX(1.1) scaleY(0.9);
+    transform: scaleX(1.1) scaleY(0.9) !important;
   }
 
   [vw-access-button] {
