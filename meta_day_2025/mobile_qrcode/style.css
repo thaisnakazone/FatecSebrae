@@ -19,13 +19,7 @@ body.tela-nome [vw-plugin-wrapper] {
 body.tela-menu #avatar {
   margin: 0 auto;
   display: block;
-}
-
-/* Avatar à esquerda só quando VLibras ativo */
-body.tela-menu.vlibras-ativo #avatar {
-  align-self: flex-start;
-  margin-left: 20px;
-  margin-right: 0;
+  align-self: center; /* garante centralização */
 }
 
 #frase {
@@ -158,6 +152,12 @@ img {
     bottom: -60px !important;
     right: 10px !important;
     transform: scaleX(1.1) scaleY(0.9) !important;
+  }
+
+  body.tela-menu.vlibras-ativo #avatar {
+    align-self: flex-start;
+    margin-left: 20px;
+    margin-right: 0;
   }
 
   [vw-access-button] {
