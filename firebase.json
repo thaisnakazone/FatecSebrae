@@ -1,0 +1,44 @@
+{
+  "projects": {
+    "default": "metaday-fatecsebrae"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/feedbacks_word_cloud",
+        "destination": "/feedbacks_word_cloud.html"
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "emulators": {
+    "firestore": {
+      "port": 8081,
+      "host": "localhost",
+      "rules": "firestore.rules",
+      "persist": true
+    },
+    "auth": {
+      "port": 9099,
+      "host": "localhost",
+      "persist": true
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
+  }
+}

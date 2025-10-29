@@ -1,0 +1,21 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install -g firebase-tools
+      - name: Deploy to Firebase
+        run: |
+          if [ "${GITHUB_REF##*/}" = "main" ]; then
+            firebase deploy --only hosting --project prod --token "${{ secrets.FIREBASE_TOKEN }}"
+          else
+            firebase deploy --only hosting --project default --token "${{ secrets.FIREBASE_TOKEN }}"
+          fi

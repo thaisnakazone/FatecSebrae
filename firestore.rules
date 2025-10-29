@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /feedbacks/{docId} {
+      allow create: if true; // qualquer um pode enviar feedback
+      allow read: if request.auth != null 
+                  && request.auth.token.email == "fatecsebrae@metaday.com.br";
+      allow update, delete: if false;
+    }
+  }
+}
