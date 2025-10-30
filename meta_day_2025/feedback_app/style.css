@@ -322,7 +322,7 @@ button:hover {
   }
 
   [vw-plugin-wrapper] {
-    top: -100px !important;
+    top: -10px !important;
     right: -50px !important;
     transform: scale(0.8) !important;
   }
