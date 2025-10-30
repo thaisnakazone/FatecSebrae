@@ -15,13 +15,17 @@ body {
 
 /* Intro principal: ocupa a viewport e centraliza conteúdo */
 #intro {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+    /* centraliza, mas com deslocamento menor */
+    min-height: calc(100vh - 0px);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    transform: translateY(-10%); /* diminuir este valor sobe o bloco (ex.: 1% → 0% → -2%) */
+  }
 
 /* Subtítulo estilizado */
 #intro .subtitulo {
