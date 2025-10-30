@@ -323,7 +323,7 @@ button:hover {
 
   [vw-plugin-wrapper] {
     max-width: 95vw !important;
-    bottom: 240px !important;
+    bottom: 140px !important;
     right: -50px !important;
     transform: scale(0.8) !important;
     transform-origin: bottom right; /* garante que cresça a partir do canto */
