@@ -15,14 +15,12 @@ body {
 
 /* Intro principal: ocupa a viewport e centraliza conteúdo */
 #intro {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding-top: 80px; /* aumente/reduza (ex.: 40px, 60px, 100px) */
-  box-sizing: border-box;
 }
 
 /* Subtítulo estilizado */
@@ -450,16 +448,6 @@ button:hover {
 @media (max-width: 600px) {
   body {
     padding: 10px;
-  }
-
-  #intro {
-    min-height: calc(100vh - 0px); /* ocupa a viewport (ajuste se houver header fixo) */
-    height: 100vh;
-    justify-content: center;       /* centraliza verticalmente */
-    padding: 0 20px;               /* remove padding-top mobile para centralização */
-    /* deslocamento visual para empurrar conteúdo um pouco para baixo no desktop */
-    /* ajuste o valor abaixo (ex.: 0%, 4%, 6%) até ficar visualmente correto */
-    transform: translateY(4%);
   }
 
   form#feedbackForm {
