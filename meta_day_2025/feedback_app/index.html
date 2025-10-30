@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feedback - Metaday Fatec Sebrae</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -12,7 +13,15 @@
   <section id="intro">
     <h1>Deixe seu feedback</h1>
     <h2 class="subtitulo">É rapidinho! 😉</h2>
-    <div class="arrow">&#x25BC;</div> <!-- seta para baixo -->
+
+    <!-- Campo de nome antes da seta -->
+    <div id="introName" class="intro-name">
+      <label for="nomeInicial">Digite seu nome para começar:</label>
+      <input id="nomeInicial" placeholder="Seu nome" />
+    </div>
+
+    <!-- seta para baixo (oculta até definir o nome) -->
+    <div class="arrow">&#x25BC;</div>
   </section>
 
   <!-- Seção principal (inicialmente escondida) -->
@@ -41,22 +50,18 @@
 
     <!-- Formulário de envio -->
     <form id="feedbackForm">
-
       <!-- 1. Perfil -->
       <div class="question-block">
         <p class="question">1. Você é:</p>
-        <div class="radio-grid">
+        <div class="radio-grid three-up"> <!-- adicione "three-up" aqui -->
           <div>
-            <input type="radio" name="perfil" value="aluno" required>
-            <label>Aluno(a)</label><br>
+            <label><input type="radio" name="perfil" value="aluno" required> Aluno(a)</label>
           </div>
           <div>
-            <input type="radio" name="perfil" value="professor">
-            <label>Professor(a)/Coordenador(a)/Diretor(a)</label><br>
+            <label><input type="radio" name="perfil" value="professor"> Professor(a) / Coordenador(a) / Diretor(a)</label>
           </div>
           <div>
-            <input type="radio" name="perfil" value="visitante">
-            <label>Visitante</label><br>
+            <label><input type="radio" name="perfil" value="visitante"> Visitante</label>
           </div>
         </div>
       </div>
@@ -66,20 +71,16 @@
         <p class="question">2. Qual a sua avaliação geral sobre o evento Meta Day Fatec Sebrae?</p>
         <div class="radio-grid">
           <div>
-            <input type="radio" name="avaliacaoGeral" value="ruim" required>
-            <label>Ruim</label><br>
+            <label><input type="radio" name="avaliacaoGeral" value="ruim" required> Ruim</label>
           </div>
           <div>
-            <input type="radio" name="avaliacaoGeral" value="regular">
-            <label>Regular</label><br>
+            <label><input type="radio" name="avaliacaoGeral" value="regular"> Regular</label>
           </div>
           <div>
-            <input type="radio" name="avaliacaoGeral" value="bom">
-            <label>Bom</label><br>
+            <label><input type="radio" name="avaliacaoGeral" value="bom"> Bom</label>
           </div>
           <div>
-            <input type="radio" name="avaliacaoGeral" value="excelente">
-            <label>Excelente</label><br>
+            <label><input type="radio" name="avaliacaoGeral" value="excelente"> Excelente</label>
           </div>
         </div>
       </div>
@@ -89,20 +90,16 @@
         <p class="question">3. O que achou da organização do evento?</p>
         <div class="radio-grid">
           <div>
-            <input type="radio" name="organizacao" value="ruim" required>
-            <label>Ruim</label><br>
+            <label><input type="radio" name="organizacao" value="ruim" required> Ruim</label>
           </div>
           <div>
-            <input type="radio" name="organizacao" value="regular">
-            <label>Regular</label><br>
+            <label><input type="radio" name="organizacao" value="regular"> Regular</label>
           </div>
           <div>
-            <input type="radio" name="organizacao" value="bom">
-            <label>Bom</label><br>
+            <label><input type="radio" name="organizacao" value="bom"> Bom</label>
           </div>
           <div>
-            <input type="radio" name="organizacao" value="excelente">
-            <label>Excelente</label><br>
+            <label><input type="radio" name="organizacao" value="excelente"> Excelente</label>
           </div>
         </div>
       </div>
@@ -112,20 +109,16 @@
         <p class="question">4. De quais áreas você mais gostou?</p>
         <div class="radio-grid">
           <div>
-            <input type="checkbox" name="areas" value="ciencia-dados">
-            <label>Ciência de Dados para Negócios</label>
+            <label><input type="checkbox" name="areas" value="ciencia-dados"> Ciência de Dados para Negócios</label>
           </div>
           <div>
-            <input type="checkbox" name="areas" value="gestao-negocios">
-            <label>Gestão de Negócios</label>
+            <label><input type="checkbox" name="areas" value="gestao-negocios"> Gestão de Negócios e Inovação</label>
           </div>
           <div>
-            <input type="checkbox" name="areas" value="marketing">
-            <label>Marketing</label>
+            <label><input type="checkbox" name="areas" value="marketing"> Marketing</label>
           </div>
           <div>
-            <input type="checkbox" name="areas" value="outras">
-            <label>Outras</label>
+            <label><input type="checkbox" name="areas" value="outras"> Outras</label>
           </div>
         </div>
       </div>

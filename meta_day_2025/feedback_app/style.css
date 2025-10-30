@@ -13,15 +13,19 @@ body {
   line-height: 1.5;
 }
 
+/* Intro principal: ocupa a viewport e centraliza conteúdo */
 #intro {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+  padding-top: 80px; /* aumente/reduza (ex.: 40px, 60px, 100px) */
+  box-sizing: border-box;
 }
 
+/* Subtítulo estilizado */
 #intro .subtitulo {
   font-size: 1.2rem;
   color: #555;
@@ -29,15 +33,72 @@ body {
   margin-bottom: 20px;
   font-family: 'Exo 2', sans-serif;
   font-weight: 400;
-  transform: skew(-8deg); /* ajuste o valor: -5deg, -10deg, etc. */
-  display: inline-block;  /* necessário para o transform funcionar bem */
+  transform: skew(-8deg);
+  display: inline-block;
 }
 
+/* --- BLOCO ISOLADO DO NOME --- */
+#introName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  padding: 12px;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+/* label específico do intro (menos pesado que o global) */
+#introName label {
+  font-weight: 500;
+  text-align: center;
+  font-size: 1.05rem;
+  color: #222;
+  margin: 0;
+  line-height: 1.2;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+/* input específico do intro — evita ser afetado pela regra global */
+#introName #nomeInicial {
+  width: 320px;
+  max-width: 92%;
+  min-width: 200px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cfcfcf;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
+  display: block;
+  margin: 0 auto;
+}
+
+/* efeito de foco sutil */
+#introName #nomeInicial:focus {
+  border-color: #6aa6ff;
+  box-shadow: 0 6px 18px rgba(106,166,255,0.12);
+  transform: translateY(-1px);
+}
+
+/* seta (inicialmente oculta; visível via .visible) */
 .arrow {
+  display: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  cursor: pointer;
   font-size: 2.5rem;
   margin-top: 20px;
-  cursor: pointer;
   animation: float 1.5s infinite ease-in-out;
+}
+
+.arrow.visible {
+  display: block;
+  opacity: 1;
 }
 
 @keyframes float {
@@ -47,7 +108,7 @@ body {
 
 /* cria um respiro ao usar scrollIntoView */
 #mainContent {
-  scroll-margin-top: 20px; /* ajuste o valor conforme o "respiro" desejado */
+  scroll-margin-top: 20px;
 }
 
 /* Título */
@@ -57,62 +118,105 @@ h1 {
   color: #2c3e50;
 }
 
-.question-block {
-  margin-bottom: 25px; /* espaço entre perguntas */
+form#feedbackForm {
+  width: 70%;
+  max-width: 920px;       /* evita ficar gigante em telas ultra-wide */
+  margin: 16px auto;
+  background: #fff;
+  padding: 16px 18px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-sizing: border-box;
+  text-align: center;
 }
 
+form#feedbackForm button[type="submit"] {
+  width: 40%;        /* 40% da largura do form */
+  max-width: 260px;  /* não cresce além disso */
+  padding: 12px 16px;
+  font-size: 1rem;
+  border-radius: 6px;
+}
+
+/* Blocos de pergunta */
+.question-block {
+  margin-bottom: 40px;
+  padding: 0 6px !important;
+}
+
+.question-block .question {
+    text-align: left !important;
+    margin: 0 0 20px 0;
+    font-weight: 700 !important;
+  }
+
 .question-block p {
-  font-weight: bold;   /* pergunta em negrito */
-  margin-bottom: 10px; /* respiro entre pergunta e opções */
-  text-align: left;    /* garante alinhamento à esquerda */
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: left;
 }
 
 .radio-grid {
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start; /* alinha todas as opções pelo topo */
-  gap: 40px;
+  gap: 40px !important;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
-.radio-grid div {
-  flex: 1;          /* cada coluna ocupa o mesmo espaço */
+.radio-grid > div {
+  flex: 1;
+  min-width: 160px;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .radio-grid label {
-  font-weight: normal; /* respostas sem negrito */
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-  width: 12px;   /* largura menor */
-  height: 12px;  /* altura menor */
-  accent-color: #007bff; /* cor de destaque (pode trocar) */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
+  font-weight: normal;
+  line-height: 1.2;
+  margin: 0;
 }
 
-/* Formulário de feedback */
-form {
-  background: #fff;
-  padding: 20px 40px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin: 20px auto;        /* centraliza horizontalmente */
-  box-sizing: border-box;
-  width: 50%;
-  text-align: center;        /* centraliza o conteúdo interno */
+.radio-grid input[type="radio"],
+.radio-grid input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 16px;
+  vertical-align: middle;
+  accent-color: #007bff;
 }
 
-label {
-  display: block;
-  width: 100%;
-  margin-bottom: 6px;
-  font-weight: 600;
-  text-align: left;
+/* grid de 4 colunas apenas para a questão com 3 opções */
+.radio-grid.three-up {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;                /* espaço entre colunas; ajuste conforme desejar */
+  align-items: start;
 }
 
-input,
-textarea {
+/* coloca cada div na coluna desejada */
+.radio-grid.three-up > div:nth-child(1) { grid-column: 1 / 2; } /* Aluno */
+.radio-grid.three-up > div:nth-child(2) { grid-column: 2 / 4; } /* Professor centralizado ocupando 2 colunas */
+.radio-grid.three-up > div:nth-child(3) { grid-column: 4 / 5; } /* Visitante */
+
+/* mantém label como inline-flex para alinhamento input + texto */
+.radio-grid.three-up label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+/* Inputs e textareas dentro de formulários mantêm 100% */
+form input,
+form textarea {
   width: 100%;
   box-sizing: border-box;
   padding: 10px;
@@ -122,18 +226,41 @@ textarea {
   font-size: 1rem;
 }
 
+/* Controle geral para inputs fora do form (não força 100%) */
+input,
+textarea {
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+/* Textarea específico */
 textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-/* Botões */
-
+/* Botões padrão (consolidado) */
 #toggleLoginBtn {
-  width: 20%;
-  margin: 10px auto;
+  background: #2c3e50;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
   font-size: 1rem;
-  padding: 12px;
+  transition: background 0.2s ease;
+  margin-bottom: 10px;
+  width: 20%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#toggleLoginBtn:hover {
+  background: #1a242f;
 }
 
 button {
@@ -147,7 +274,7 @@ button {
   transition: background 0.2s ease;
   display: block;
   margin: 8px auto 0 auto;
-  width: 40%; /* ou ajuste conforme desejar */
+  width: 40%;
 }
 
 button:hover {
@@ -186,29 +313,25 @@ button:hover {
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
+.feedback-item p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .feedback-item strong {
   display: block;
   margin-bottom: 6px;
   color: #34495e;
 }
 
-/* Botão de toggle do login */
-#toggleLoginBtn {
-  background: #2c3e50;
-  color: #fff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s ease;
-  margin-bottom: 10px;
+.feedback-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
 }
 
-#toggleLoginBtn:hover {
-  background: #1a242f;
-}
-
+/* Login form */
 #loginForm {
   max-height: 0;
   overflow: hidden;
@@ -216,8 +339,8 @@ button:hover {
   padding: 0;
   transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
   display: flex;
-  flex-direction: column;   /* mantém os inputs em coluna */
-  align-items: center;      /* centraliza horizontalmente */
+  flex-direction: column;
+  align-items: center;
 }
 
 #loginForm.active {
@@ -226,10 +349,20 @@ button:hover {
   padding: 15px;
 }
 
-/* regra geral (desktop) */
+/* regra geral (desktop) para botões dentro do loginForm */
 #loginForm button {
-  width: 20%;          /* deixa o botão só do tamanho do conteúdo */
+  width: 20%;
   margin: 10px 0;
+}
+
+#loginForm input[type="email"],
+#loginForm input[type="password"] {
+  width: 70%;         /* mobile-friendly */
+  max-width: 480px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  margin: 6px auto;   /* centraliza quando não ocupa 100% */
+  display: block;
 }
 
 /* Avatar Lia */
@@ -240,31 +373,31 @@ button:hover {
 }
 
 #avatarImg {
-  width: 200px;              /* pode ser levemente retangular se mudar height */
-  height: 150px;             /* ex: 160x120 dá um retângulo suave */
-  border-radius: 20px;       /* cantos arredondados, mas não circulares */
-  object-fit: contain;         /* cobre bem o espaço */
-  border: 2px solid #3498db; /* borda azul futurista */
-  box-shadow: 0 0 12px rgba(52,152,219,0.6), 
-              0 0 20px rgba(52,152,219,0.4) inset; /* glow externo e interno */
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* fundo tech */
+  width: 200px;
+  height: 150px;
+  border-radius: 20px;
+  object-fit: contain;
+  border: 2px solid #3498db;
+  box-shadow: 0 0 12px rgba(52,152,219,0.6),
+              0 0 20px rgba(52,152,219,0.4) inset;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 #avatarImg:hover {
-  transform: scale(1.05) rotate(-1deg); /* leve interação futurista */
+  transform: scale(1.05) rotate(-1deg);
   box-shadow: 0 0 18px rgba(52,152,219,0.9),
               0 0 25px rgba(52,152,219,0.6) inset;
 }
 
-/* Padrão: centralizado */
+/* centraliza padrão */
 #avatar, #liaMessage {
   justify-content: center;
   margin: 0 auto;
   text-align: center;
 }
 
-/* Balão divertido */
+/* Balão da Lia */
 #liaMessage {
   position: relative;
   max-width: 330px;
@@ -279,15 +412,14 @@ button:hover {
   text-align: center;
   box-shadow: 3px 3px 0 #3498db;
   font-family: 'Exo 2', sans-serif;
-  opacity: 0;                  /* começa invisível */
-  transition: opacity 1s ease; /* efeito de fade-in */
+  opacity: 0;
+  transition: opacity 1s ease;
 }
 
-/* Triângulo do balão */
 #liaMessage::before {
   content: "";
   position: absolute;
-  top: -18px; /* ajusta a distância do balão */
+  top: -18px;
   left: 50%;
   transform: translateX(-50%);
   border-width: 0 20px 20px 20px;
@@ -311,7 +443,7 @@ button:hover {
   pointer-events: none;
 }
 [vw] * {
-  pointer-events: auto; /* mantém o VLibras clicável */
+  pointer-events: auto;
 }
 
 /* Responsividade */
@@ -320,18 +452,34 @@ button:hover {
     padding: 10px;
   }
 
-  form, #loginForm {
-    width: 90%;
-    max-width: none;
-    margin: 10px auto;   /* mantém centralizado e com espaçamento vertical */
-    padding: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* devolve a sombra suave */
-    border-radius: 8px;  /* devolve as bordas arredondadas */
-    background: #fff;    /* garante que continue branco mesmo se herdar cor */
+  #intro {
+    min-height: calc(100vh - 0px); /* ocupa a viewport (ajuste se houver header fixo) */
+    height: 100vh;
+    justify-content: center;       /* centraliza verticalmente */
+    padding: 0 20px;               /* remove padding-top mobile para centralização */
+    /* deslocamento visual para empurrar conteúdo um pouco para baixo no desktop */
+    /* ajuste o valor abaixo (ex.: 0%, 4%, 6%) até ficar visualmente correto */
+    transform: translateY(4%);
+  }
+
+  form#feedbackForm {
+    width: 92%;           /* aumenta o espaço interno para labels longas */
+    padding: 20px 36px;
+  }
+
+  form#feedbackForm button[type="submit"] {
+    width: 60%;
+    max-width: 220px;
   }
 
   #loginForm button {
-    width: 60%;         /* ocupa boa parte da tela no celular */
+    width: 60%;
+  }
+
+  #loginForm input[type="email"],
+  #loginForm input[type="password"] {
+    width: 90%;       /* maior em desktop */
+    max-width: 720px;
   }
 
   #toggleLoginBtn {
@@ -349,7 +497,7 @@ button:hover {
   }
 
   [vw-access-button] {
-    bottom: 60px !important;
+    bottom: 80px !important;
     right: 5px !important;
     transform: scale(0.9);
   }
@@ -363,20 +511,48 @@ button:hover {
   body.vlibras-ativo #avatar,
   body.vlibras-ativo #liaMessage {
     justify-content: flex-start;
-    max-width: 220px;     /* mais estreito */
+    max-width: 220px;
     margin-left: 10px;
     margin-right: auto;
     text-align: left;
-    white-space: normal;  /* permite quebra de linha */
+    white-space: normal;
   }
 
   .radio-grid {
-    flex-direction: column; /* empilha as opções */
-    gap: 15px;              /* espaço vertical entre elas */
+    display: flex;
+    flex-direction: column; /* empilha colunas em uma única coluna */
+    gap: 12px;              /* espaço vertical entre blocos */
   }
 
-  .radio-grid div {
-    flex: unset; /* remove largura fixa */
+  .radio-grid > div {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    display: block;
   }
 
+  .radio-grid label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .radio-grid input[type="radio"],
+  .radio-grid input[type="checkbox"] {
+    flex: 0 0 auto;
+    margin-right: 10px;
+  }
+
+  .radio-grid.three-up {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .radio-grid.three-up > div { grid-column: auto; width: 100%; }
+
+  /* adapta o bloco do nome no mobile */
+  #introName { max-width: 92%; padding: 8px; }
+  #introName #nomeInicial { width: 92%; min-width: 160px; }
 }

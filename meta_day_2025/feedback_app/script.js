@@ -1,5 +1,5 @@
 // ===============================
-// script.js (arquivo completo integrado)
+// script.js (integrado: saudação com nome + seta como gatilho + salvar todos campos)
 // ===============================
 
 // ===============================
@@ -16,7 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 // ===============================
-// 2. CONFIGURAÇÃO FIREBASE
+// 2. CONFIG FIREBASE
 // ===============================
 const firebaseConfig = {
   apiKey: "AIzaSyBinNESW5Am9fV-5EH4hEfBvhxgqwfRwfE",
@@ -27,17 +27,14 @@ const firebaseConfig = {
   appId: "1:813356147967:web:40ec819dee718dd4e0d8ca",
   measurementId: "G-8Y56FGSNVL"
 };
-
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Persistência só em memória (sempre desloga no refresh)
 setPersistence(auth, inMemoryPersistence)
   .then(() => console.log("Persistência definida como 'inMemory'"))
   .catch((error) => console.error("Erro ao definir persistência:", error));
 
-// Conexão com emuladores (se local)
 if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
   console.log("Conectado aos Emuladores");
   connectFirestoreEmulator(db, "localhost", 8081);
@@ -45,7 +42,7 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
 }
 
 // ===============================
-// 3. FUNÇÕES UTILITÁRIAS (VOZ, BOCA, TYPEWRITER)
+// 3. VOZ, BOCA, TYPEWRITER
 // ===============================
 let bocaAberta = false;
 let animacao = null;
@@ -53,7 +50,11 @@ let voices = [];
 let voicesReady = false;
 let bocaTimer = null;
 
-// Carrega vozes assim que o navegador disponibilizar
+// DECLARAÇÕES PARA ELEMENTOS USADOS NO BLOCO 8
+// Declaradas com let para evitar redeclaração em outras seções
+let nomeInput;
+let arrowEl;
+
 function carregarVozes() {
   voices = speechSynthesis.getVoices() || [];
   voicesReady = voices.length > 0;
@@ -62,32 +63,25 @@ function carregarVozes() {
 speechSynthesis.onvoiceschanged = carregarVozes;
 setTimeout(carregarVozes, 150);
 
-// animação da boca (troca imagem ou adiciona classe)
 function animarBoca() {
   if (animacao) return;
   animacao = setInterval(() => {
     bocaAberta = !bocaAberta;
     const avatar = document.getElementById("avatarImg");
-    if (avatar) {
-      avatar.src = bocaAberta ? "avatar_aberta.png" : "avatar_fechada.png";
-    } else {
+    if (avatar) avatar.src = bocaAberta ? "avatar_aberta.png" : "avatar_fechada.png";
+    else {
       const el = document.getElementById("boca_lia");
       if (el) el.classList.toggle("aberta");
     }
   }, 180);
 }
 function pararBoca() {
-  if (animacao) {
-    clearInterval(animacao);
-    animacao = null;
-  }
+  if (animacao) { clearInterval(animacao); animacao = null; }
   const avatar = document.getElementById("avatarImg");
   if (avatar) avatar.src = "avatar_fechada.png";
   const el = document.getElementById("boca_lia");
   if (el) el.classList.remove("aberta");
 }
-
-// polling fallback para garantir movimento mesmo quando eventos não disparam
 function iniciarFallbackBoca() {
   if (bocaTimer) return;
   bocaTimer = setInterval(() => {
@@ -96,63 +90,43 @@ function iniciarFallbackBoca() {
   }, 200);
 }
 function pararFallbackBoca() {
-  if (bocaTimer) {
-    clearInterval(bocaTimer);
-    bocaTimer = null;
-  }
+  if (bocaTimer) { clearInterval(bocaTimer); bocaTimer = null; }
   const el = document.getElementById("boca_lia");
   if (el) el.classList.remove("falando");
 }
 
-// escolhe voz pt-BR feminina com lógica por navegador
 function pickFemalePtBrVoice(list) {
   const ua = navigator.userAgent;
   const isEdge = ua.includes("Edg");
   const isChrome = ua.includes("Chrome") && !isEdge;
-
-  if ((!list || !list.length) && speechSynthesis.getVoices) {
-    list = speechSynthesis.getVoices();
-  }
+  if ((!list || !list.length) && speechSynthesis.getVoices) list = speechSynthesis.getVoices();
   list = list || [];
-
   if (isEdge) {
-    return (
-      list.find(v => v.name === "Microsoft Maria - Portuguese (Brazil)") ||
-      list.find(v => v.name === "Microsoft Francisca Online (Natural) - Portuguese (Brazil)") ||
-      list.find(v => v.name.toLowerCase().includes("maria")) ||
-      list.find(v => v.lang === "pt-BR")
-    );
+    return list.find(v => v.name === "Microsoft Maria - Portuguese (Brazil)")
+      || list.find(v => v.name === "Microsoft Francisca Online (Natural) - Portuguese (Brazil)")
+      || list.find(v => v.name.toLowerCase().includes("maria"))
+      || list.find(v => v.lang === "pt-BR");
   }
-
   if (isChrome) {
-    return (
-      list.find(v => v.name === "Google português do Brasil") ||
-      list.find(v => v.name.toLowerCase().includes("google português")) ||
-      null
-    );
+    return list.find(v => v.name === "Google português do Brasil")
+      || list.find(v => v.name.toLowerCase().includes("google português"))
+      || null;
   }
-
   return list.find(v => v.lang === "pt-BR") || null;
 }
 
-// função principal de falar (usa voice escolhida, eventos e fallbacks)
 function falar(texto) {
   if (!voicesReady) {
     voices = speechSynthesis.getVoices() || [];
     voicesReady = voices.length > 0;
   }
-  if (!voicesReady) {
-    setTimeout(() => falar(texto), 150);
-    return;
-  }
-
+  if (!voicesReady) { setTimeout(() => falar(texto), 150); return; }
   if (speechSynthesis.speaking || speechSynthesis.pending) {
     try { speechSynthesis.cancel(); } catch (e) {}
   }
 
   const utter = new SpeechSynthesisUtterance(texto);
   utter.lang = "pt-BR";
-
   const ua = navigator.userAgent;
   const isEdge = ua.includes("Edg");
   const isChrome = ua.includes("Chrome") && !isEdge;
@@ -160,40 +134,17 @@ function falar(texto) {
   utter.pitch = 1.05;
 
   const voz = pickFemalePtBrVoice(voices);
-  if (voz && (isEdge || voz.name.includes("Google"))) {
-    utter.voice = voz;
-    console.log("Usando voz:", voz.name);
-  } else {
-    if (voz) console.log("Voz detectada (não aplicada no Chrome):", voz.name);
-    console.log("Deixando o navegador usar a voz padrão para evitar mudo no Chrome.");
-  }
+  if (voz && (isEdge || voz.name.includes("Google"))) { utter.voice = voz; console.log("Usando voz:", voz.name); }
+  else { if (voz) console.log("Voz detectada (não aplicada no Chrome):", voz.name); console.log("Usando voz padrão do navegador."); }
 
   let started = false;
-  utter.onstart = () => {
-    started = true;
-    animarBoca();
-    iniciarFallbackBoca();
-  };
-  utter.onend = () => {
-    pararBoca();
-    pararFallbackBoca();
-  };
-  utter.onerror = (e) => {
-    console.warn("Erro na fala:", e);
-    pararBoca();
-    pararFallbackBoca();
-  };
+  utter.onstart = () => { started = true; animarBoca(); iniciarFallbackBoca(); };
+  utter.onend = () => { pararBoca(); pararFallbackBoca(); };
+  utter.onerror = (e) => { console.warn("Erro na fala:", e); pararBoca(); pararFallbackBoca(); };
 
   window._activeUtterance = utter;
-
-  try {
-    speechSynthesis.speak(utter);
-  } catch (e) {
-    console.warn("speak() falhou, tentando com pequeno delay:", e);
-    setTimeout(() => {
-      try { speechSynthesis.speak(utter); } catch (err) { console.warn(err); }
-    }, 200);
-  }
+  try { speechSynthesis.speak(utter); }
+  catch (e) { console.warn("speak() falhou, tentando com delay:", e); setTimeout(() => { try { speechSynthesis.speak(utter); } catch(e){console.warn(e);} }, 200); }
 
   setTimeout(() => {
     if (!started && !speechSynthesis.speaking) {
@@ -203,10 +154,12 @@ function falar(texto) {
   }, 1000);
 }
 
-// Inicia o texto com digitação (typewriter), depois chama falar com texto limpo
 function startTypewriterAndSpeech() {
+  const nome = (window.userName || "").trim();
+  const saudacao = nome ? `Olá, ${nome}! ` : "Olá! ";
+
   const partes = [
-    { texto: "Olá! Eu sou a ", tag: "span" },
+    { texto: saudacao + "Eu sou a ", tag: "span" },
     { texto: "Lia", tag: "strong" },
     { texto: "!", tag: "span" },
     { texto: "<br>", tag: "br" },
@@ -214,7 +167,7 @@ function startTypewriterAndSpeech() {
     { texto: "Meta Day Fatec Sebrae", tag: "em" },
     { texto: "!", tag: "span" },
     { texto: "<br>", tag: "br" },
-    { texto: "Deixe seu feedback e nos ajude a melhorar.", tag: "span" }
+    { texto: "Deixe seu feedback e contribua para experiências cada vez melhores.", tag: "span" }
   ];
 
   const liaMessage = document.getElementById("liaMessage");
@@ -226,29 +179,19 @@ function startTypewriterAndSpeech() {
       let parteIndex = 0;
       let charIndex = 0;
       let currentNode = null;
-
       function typeWriter() {
         if (parteIndex < partes.length) {
           const parte = partes[parteIndex];
           if (parte.tag === "br") {
             p.appendChild(document.createElement("br"));
-            parteIndex++;
-            charIndex = 0;
-            setTimeout(typeWriter, 200);
-            return;
+            parteIndex++; charIndex = 0; setTimeout(typeWriter, 200); return;
           }
-          if (charIndex === 0) {
-            currentNode = document.createElement(parte.tag);
-            p.appendChild(currentNode);
-          }
+          if (charIndex === 0) { currentNode = document.createElement(parte.tag); p.appendChild(currentNode); }
           if (charIndex < parte.texto.length) {
             currentNode.textContent += parte.texto.charAt(charIndex);
-            charIndex++;
-            setTimeout(typeWriter, 40);
+            charIndex++; setTimeout(typeWriter, 40);
           } else {
-            parteIndex++;
-            charIndex = 0;
-            setTimeout(typeWriter, 200);
+            parteIndex++; charIndex = 0; setTimeout(typeWriter, 200);
           }
         }
       }
@@ -256,7 +199,9 @@ function startTypewriterAndSpeech() {
     }
   }
 
-  const textoLimpo = "Olá! Eu sou a Lia! Adorei te ver no Meta Day Fatec Sebrae! Deixe seu feedback e nos ajude a melhorar.";
+  const textoLimpo = nome
+    ? `Olá, ${nome}! Eu sou a Lia! Adorei te ver no Meta Day Fatec Sebrae! Deixe seu feedback e contribua para experiências cada vez melhores.`
+    : `Olá! Eu sou a Lia! Adorei te ver no Meta Day Fatec Sebrae! Deixe seu feedback e contribua para experiências cada vez melhores.`;
   falar(textoLimpo);
 }
 
@@ -273,6 +218,8 @@ const form = document.getElementById("feedbackForm");
 const statusMsg = document.getElementById("statusMsg");
 const feedbackContainer = document.getElementById("feedbackContainer");
 
+// NOTE: nomeInput and arrowEl are assigned after DOMContentLoaded
+
 // ===============================
 // 5. EVENT LISTENERS
 // ===============================
@@ -281,9 +228,7 @@ const feedbackContainer = document.getElementById("feedbackContainer");
 if (toggleLoginBtn) {
   toggleLoginBtn.addEventListener("click", () => {
     loginForm.classList.toggle("active");
-    toggleLoginBtn.textContent = loginForm.classList.contains("active")
-      ? "Fechar área restrita"
-      : "Área restrita";
+    toggleLoginBtn.textContent = loginForm.classList.contains("active") ? "Fechar área restrita" : "Área restrita";
   });
 }
 
@@ -292,12 +237,8 @@ if (loginBtn) {
   loginBtn.addEventListener("click", async () => {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      console.error("Erro no login:", error);
-      alert("Falha no login. Verifique email e senha.");
-    }
+    try { await signInWithEmailAndPassword(auth, email, password); }
+    catch (error) { console.error("Erro no login:", error); alert("Falha no login. Verifique email e senha."); }
   });
 }
 
@@ -307,20 +248,25 @@ if (logoutBtn) {
     await signOut(auth);
     const emailEl = document.getElementById("loginEmail");
     const passEl = document.getElementById("loginPassword");
-    if (emailEl) emailEl.value = "";
-    if (passEl) passEl.value = "";
+    if (emailEl) emailEl.value = ""; if (passEl) passEl.value = "";
   });
 }
 
-// Envio de feedback
+// Envio de feedback (agora salva todos os campos + nome)
 if (form) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nome = document.getElementById("nome").value || "Anônimo";
-    const mensagem = document.getElementById("mensagem").value.trim();
 
-    if (!mensagem) {
-      statusMsg.textContent = "❌ Digite uma mensagem antes de enviar.";
+    const nome = (window.userName || nomeInput?.value?.trim() || "Anônimo");
+    const perfil = document.querySelector('input[name="perfil"]:checked')?.value || null;
+    const avaliacaoGeral = document.querySelector('input[name="avaliacaoGeral"]:checked')?.value || null;
+    const organizacao = document.querySelector('input[name="organizacao"]:checked')?.value || null;
+    const areas = Array.from(document.querySelectorAll('input[name="areas"]:checked')).map(el => el.value);
+    const favorito = document.getElementById("favorito")?.value?.trim() || "";
+    const comentarios = document.getElementById("comentarios")?.value?.trim() || "";
+
+    if (!comentarios && !favorito) {
+      statusMsg.textContent = "❌ Escreva ao menos um comentário ou projeto favorito antes de enviar.";
       statusMsg.style.color = "red";
       return;
     }
@@ -328,7 +274,12 @@ if (form) {
     try {
       await addDoc(collection(db, "feedbacks"), {
         nome,
-        mensagem,
+        perfil,
+        avaliacaoGeral,
+        organizacao,
+        areas,
+        favorito,
+        comentarios,
         criadoEm: new Date()
       });
       form.reset();
@@ -345,10 +296,9 @@ if (form) {
 }
 
 // ===============================
-// 6. OBSERVADORES
+// 6. OBSERVADORES (admin leitura)
 // ===============================
 let unsubscribe = null;
-
 onAuthStateChanged(auth, (user) => {
   if (user && user.email === "fatecsebrae@metaday.com.br") {
     if (loginBtn) loginBtn.style.display = "none";
@@ -363,7 +313,15 @@ onAuthStateChanged(auth, (user) => {
         const data = doc.data();
         const div = document.createElement("div");
         div.className = "feedback-item";
-        div.innerHTML = `<strong>${data.nome}</strong>: ${data.mensagem}`;
+        div.innerHTML = `
+          <p><strong>Nome</strong> ${data.nome || "-"}</p>
+          <p><strong>Perfil</strong> ${data.perfil || "-"}</p>
+          <p><strong>Avaliação geral</strong> ${data.avaliacaoGeral || "-"}</p>
+          <p><strong>Organização</strong> ${data.organizacao || "-"}</p>
+          <p><strong>Áreas</strong> ${data.areas ? data.areas.join(", ") : "-"}</p>
+          <p><strong>Projeto favorito</strong> ${data.favorito || "-"}</p>
+          <p><strong>Comentários</strong> ${data.comentarios || "-"}</p>
+        `;
         if (feedbackContainer) feedbackContainer.appendChild(div);
       });
     });
@@ -377,7 +335,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ===============================
-// 7. BOTÃO DE ATIVAR SOM (FALLBACK)
+// 7. BOTÃO ATIVAR SOM (FALLBACK)
 // ===============================
 const btnAtivarSom = document.getElementById("ativarSom");
 if (btnAtivarSom) {
@@ -392,51 +350,88 @@ if (btnAtivarSom) {
 }
 
 // ===============================
-// 8. INTEGRAÇÃO COM A SETA E LÓGICA DE ABERTURA
+// 8. SETA E ABERTURA (seta é gatilho; exige nome)
 // ===============================
+
+// NOTE: nomeInput and arrowEl are assigned inside DOMContentLoaded block below
+
+// Função que abre a UI da Lia, sempre lendo o nome atual do input
 function abrirComLia() {
+  const nomeAtual = (window.userName || nomeInput?.value?.trim() || "").trim();
+  if (!nomeAtual) {
+    alert("Digite seu nome para começar");
+    nomeInput?.focus();
+    return;
+  }
+  window.userName = nomeAtual;
+
   const intro = document.getElementById("intro");
   const main = document.getElementById("mainContent");
-  const arrow = document.querySelector(".arrow");
 
   if (intro) intro.style.display = "none";
-  if (main) {
-    main.style.display = "block";
-    main.scrollIntoView({ behavior: "smooth" });
-  }
-  if (arrow) arrow.style.display = "none";
+  if (main) { main.style.display = "block"; main.scrollIntoView({ behavior: "smooth" }); }
+  if (arrowEl) { arrowEl.classList.remove("visible"); arrowEl.style.display = "none"; }
 
   carregarVozes();
   startTypewriterAndSpeech();
 }
 
-// controla inicialização via navegador / seta
+// DOM ready: vincula listeners que precisam do DOM e inicializa nomeInput/arrowEl
 window.addEventListener("DOMContentLoaded", () => {
-  const ua = navigator.userAgent;
-  const isEdge = ua.includes("Edg");
-  const arrow = document.querySelector(".arrow");
+  nomeInput = document.getElementById("nomeInicial");
+  arrowEl = document.querySelector(".arrow");
 
-  if (isEdge) {
-    // Edge: não mostramos a intro, iniciamos automaticamente
-    const intro = document.getElementById("intro");
-    const main = document.getElementById("mainContent");
-    if (intro) intro.style.display = "none";
-    if (main) main.style.display = "block";
-
-    // pequena espera para vozes carregarem
-    setTimeout(() => abrirComLia(), 200);
-    return;
+  if (!nomeInput) {
+    console.warn("input #nomeInicial não encontrado no DOM");
   }
 
-  // Chrome e outros: aguarda interação do usuário (seta)
-  if (arrow) {
-    arrow.style.display = ""; // garante visibilidade se estiver ocultada por CSS
-    arrow.addEventListener("click", abrirComLia, { once: true });
+  // garante que a seta comece oculta (CSS também controla opacidade/transição)
+  if (arrowEl) {
+    arrowEl.classList.remove("visible");
+    arrowEl.style.display = "none";
+  }
+
+  // mostra/oculta a seta conforme o usuário digita
+  if (nomeInput && arrowEl) {
+    nomeInput.addEventListener("input", () => {
+      const v = nomeInput.value.trim();
+      if (v) {
+        arrowEl.style.display = "";
+        setTimeout(() => arrowEl.classList.add("visible"), 10);
+      } else {
+        arrowEl.classList.remove("visible");
+        setTimeout(() => {
+          if (!arrowEl.classList.contains("visible")) arrowEl.style.display = "none";
+        }, 240);
+      }
+    });
+  }
+
+  const ua = navigator.userAgent;
+  const isEdge = ua.includes("Edg");
+
+  // Edge: não iniciar automaticamente; deixa intro visível até o usuário digitar e clicar
+  if (isEdge) {
+    const intro = document.getElementById("intro");
+    const main = document.getElementById("mainContent");
+    if (intro) intro.style.display = "block";
+    if (main) main.style.display = "none";
+  }
+
+  // sempre vincula o clique da seta à função (ela vai ler o input no momento)
+  if (arrowEl) {
+    arrowEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      abrirComLia();
+    });
   } else {
-    // fallback: se não houver seta, qualquer clique ativa a Lia
+    // fallback: qualquer clique tenta abrir (verifica nome)
     document.addEventListener("click", function fallbackClick() {
       abrirComLia();
       document.removeEventListener("click", fallbackClick);
     }, { once: true });
   }
+
+  // opcional: foco automático no input ao carregar para melhor UX
+  nomeInput?.focus();
 });
