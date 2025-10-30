@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "metaday-fatecsebrae-dev",
+    "default": "metaday-fatecsebrae",
     "prod": "metaday-fatecsebrae"
   }
 }

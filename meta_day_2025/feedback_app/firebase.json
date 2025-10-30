@@ -8,12 +8,6 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "/feedbacks_word_cloud",
-        "destination": "/feedbacks_word_cloud.html"
-      }
     ]
   },
   "firestore": {
