@@ -485,7 +485,7 @@ button:hover {
   }
 
   [vw-access-button] {
-    bottom: 80px !important;
+    bottom: 100px !important;
     right: 5px !important;
     transform: scale(0.9);
   }
