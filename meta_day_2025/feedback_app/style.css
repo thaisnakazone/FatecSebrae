@@ -15,13 +15,14 @@ body {
 
 /* Intro principal: ocupa a viewport e centraliza conteúdo */
 #intro {
-  min-height: 100svh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* começa do topo */
   align-items: center;
   text-align: center;
-  padding: 0 20px;
+  padding: 80px 20px 0; /* controla distância do topo */
+  box-sizing: border-box;
 }
 
 /* Subtítulo estilizado */
@@ -108,8 +109,6 @@ body {
 /* cria um respiro ao usar scrollIntoView */
 #mainContent {
   scroll-margin-top: 20px;
-  min-height: 100svh; /* garante espaço para rolagem */
-  padding: 40px 20px;
 }
 
 /* Título */
