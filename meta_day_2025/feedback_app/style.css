@@ -322,9 +322,9 @@ button:hover {
   }
 
   [vw-plugin-wrapper] {
-    bottom: 200px !important;
-    right: -10px !important;
-    transform: scale(0.7) !important;
+    bottom: 300px !important;
+    right: -20px !important;
+    transform: scale(0.8) !important;
   }
 
   body.vlibras-ativo #avatar,
