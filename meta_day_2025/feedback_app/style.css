@@ -17,7 +17,7 @@ body {
 #intro {
     /* centraliza, mas com deslocamento menor */
     min-height: calc(100vh - 0px);
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
