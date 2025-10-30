@@ -16,7 +16,7 @@ body {
 /* Intro principal: ocupa a viewport e centraliza conteúdo */
 #intro {
     /* centraliza, mas com deslocamento menor */
-    min-height: calc(100vh - 0px);
+    min-height: calc(100svh - 0px);
     height: 100svh;
     display: flex;
     flex-direction: column;
@@ -24,7 +24,7 @@ body {
     align-items: center;
     text-align: center;
     padding: 0 20px;
-    transform: translateY(1%); /* diminuir este valor sobe o bloco (ex.: 1% → 0% → -2%) */
+    transform: translateY(0%); /* diminuir este valor sobe o bloco (ex.: 1% → 0% → -2%) */
   }
 
 /* Subtítulo estilizado */
