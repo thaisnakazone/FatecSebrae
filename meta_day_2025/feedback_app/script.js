@@ -378,14 +378,18 @@ function abrirComLia() {
 
 // DOM ready: vincula listeners que precisam do DOM e inicializa nomeInput/arrowEl
 window.addEventListener("DOMContentLoaded", () => {
-  nomeInput = document.getElementById("nomeInicial");
-  arrowEl = document.querySelector(".arrow");
+  // pega elementos
+  const nomeInput = document.getElementById("nomeInicial");
+  const arrowEl = document.querySelector(".arrow");
+  const btn = document.getElementById("startBtn");
+  const intro = document.getElementById("intro");
+  const main = document.getElementById("mainContent");
 
   if (!nomeInput) {
     console.warn("input #nomeInicial não encontrado no DOM");
   }
 
-  // garante que a seta comece oculta (CSS também controla opacidade/transição)
+  // garante que a seta comece oculta
   if (arrowEl) {
     arrowEl.classList.remove("visible");
     arrowEl.style.display = "none";
@@ -407,31 +411,35 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Edge: não iniciar automaticamente
   const ua = navigator.userAgent;
   const isEdge = ua.includes("Edg");
-
-  // Edge: não iniciar automaticamente; deixa intro visível até o usuário digitar e clicar
   if (isEdge) {
-    const intro = document.getElementById("intro");
-    const main = document.getElementById("mainContent");
     if (intro) intro.style.display = "block";
     if (main) main.style.display = "none";
   }
 
-  // sempre vincula o clique da seta à função (ela vai ler o input no momento)
+  // clique da seta → abrirComLia
   if (arrowEl) {
     arrowEl.addEventListener("click", (e) => {
       e.preventDefault();
       abrirComLia();
     });
   } else {
-    // fallback: qualquer clique tenta abrir (verifica nome)
     document.addEventListener("click", function fallbackClick() {
       abrirComLia();
       document.removeEventListener("click", fallbackClick);
     }, { once: true });
   }
 
-  // opcional: foco automático no input ao carregar para melhor UX
+  // clique no botão start → mostra mainContent e rola
+  if (btn && main) {
+    btn.addEventListener("click", () => {
+      main.style.display = "block"; // ou "flex"
+      main.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  // foco automático no input
   nomeInput?.focus();
 });
