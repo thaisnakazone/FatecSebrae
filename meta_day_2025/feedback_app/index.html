@@ -8,47 +8,55 @@
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Deixe seu feedback</h1>
+  <!-- Seção inicial -->
+  <section id="intro">
+    <h1>Deixe seu feedback</h1>
+    <h2 class="subtitulo">É rapidinho! 😉</h2>
+    <div class="arrow">&#x25BC;</div> <!-- seta para baixo -->
+  </section>
 
-  <!-- Avatar Lia -->
-  <div id="avatar" style="text-align:center; margin-bottom:20px;">
-    <img id="avatarImg" src="avatar_fechada.png" alt="Avatar Lia" width="120">
-  </div>
+  <!-- Seção principal (inicialmente escondida) -->
+  <section id="mainContent" style="display:none;">
+    <!-- Avatar Lia -->
+    <div id="avatar" style="text-align:center; margin-bottom:20px;">
+      <img id="avatarImg" src="avatar_fechada.png" alt="Avatar Lia" width="120">
+    </div>
 
-  <!-- Balão de fala da Lia -->
-  <div id="liaMessage">
-    <p></p>
-  </div>
+    <!-- Balão de fala da Lia -->
+    <div id="liaMessage">
+      <p></p>
+    </div>
 
-  <!-- Botão para abrir/fechar login -->
-  <button id="toggleLoginBtn" type="button">Área restrita</button>
+    <!-- Botão para abrir/fechar login -->
+    <button id="toggleLoginBtn" type="button">Área restrita</button>
 
-  <!-- Formulário de login escondido por padrão -->
-  <div id="loginForm">
-    <input type="email" id="loginEmail" placeholder="Email" required />
-    <input type="password" id="loginPassword" placeholder="Senha" required />
-    <button id="loginBtn" type="button">Login</button>
-    <button id="logoutBtn" type="button" style="display:none;">Sair</button>
-    <p id="userStatus"></p>
-  </div>
+    <!-- Formulário de login escondido por padrão -->
+    <div id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email" required />
+      <input type="password" id="loginPassword" placeholder="Senha" required />
+      <button id="loginBtn" type="button">Login</button>
+      <button id="logoutBtn" type="button" style="display:none;">Sair</button>
+      <p id="userStatus"></p>
+    </div>
 
-  <!-- Formulário de envio (liberado para todos) -->
-  <form id="feedbackForm">
-    <label for="nome">Nome:</label><br />
-    <input type="text" id="nome" name="nome" /><br /><br />
+    <!-- Formulário de envio -->
+    <form id="feedbackForm">
+      <label for="nome">Nome:</label><br />
+      <input type="text" id="nome" name="nome" /><br /><br />
 
-    <label for="mensagem">Mensagem:</label><br />
-    <textarea id="mensagem" name="mensagem" required></textarea><br /><br />
+      <label for="mensagem">Mensagem:</label><br />
+      <textarea id="mensagem" name="mensagem" required></textarea><br /><br />
 
-    <button type="submit">Enviar</button>
-    <p id="statusMsg"></p>
-  </form>
+      <button type="submit">Enviar</button>
+      <p id="statusMsg"></p>
+    </form>
 
-  <!-- Container para listagem (só admin vê) -->
-  <div id="feedbackList" style="display:none;">
-    <h2>Feedbacks enviados</h2>
-    <div id="feedbackContainer"></div>
-  </div>
+    <!-- Container para listagem -->
+    <div id="feedbackList" style="display:none;">
+      <h2>Feedbacks enviados</h2>
+      <div id="feedbackContainer"></div>
+    </div>
+  </section>
 
   <!-- VLibras -->
   <div vw class="enabled">
@@ -62,8 +70,25 @@
     new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>
 
+  <script>
+    const body = document.body;
+    const wrapper = document.querySelector('[vw-plugin-wrapper]');
+
+    // Observa mudanças no wrapper do VLibras
+    if (wrapper) {
+      const obs = new MutationObserver(() => {
+        const visible = wrapper.offsetParent !== null && wrapper.style.display !== 'none';
+        if (visible) {
+          body.classList.add('vlibras-ativo');
+        } else {
+          body.classList.remove('vlibras-ativo');
+        }
+      });
+      obs.observe(wrapper, { attributes: true, attributeFilter: ['style', 'class'] });
+    }
+  </script>
+
   <!-- Seu script principal -->
   <script type="module" src="script.js"></script>
-
 </body>
 </html>

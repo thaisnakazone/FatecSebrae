@@ -13,6 +13,43 @@ body {
   line-height: 1.5;
 }
 
+#intro {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#intro .subtitulo {
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 8px;
+  margin-bottom: 20px;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 400;
+  transform: skew(-8deg); /* ajuste o valor: -5deg, -10deg, etc. */
+  display: inline-block;  /* necessário para o transform funcionar bem */
+}
+
+.arrow {
+  font-size: 2.5rem;
+  margin-top: 20px;
+  cursor: pointer;
+  animation: float 1.5s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(10px); opacity: 0.6; }
+}
+
+/* cria um respiro ao usar scrollIntoView */
+#mainContent {
+  scroll-margin-top: 20px; /* ajuste o valor conforme o "respiro" desejado */
+}
+
 /* Título */
 h1 {
   text-align: center;
@@ -145,12 +182,21 @@ button:hover {
   opacity: 0;
   padding: 0;
   transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+  display: flex;
+  flex-direction: column;   /* mantém os inputs em coluna */
+  align-items: center;      /* centraliza horizontalmente */
 }
 
 #loginForm.active {
   max-height: 1000px;
   opacity: 1;
   padding: 15px;
+}
+
+/* regra geral (desktop) */
+#loginForm button {
+  width: 20%;          /* deixa o botão só do tamanho do conteúdo */
+  margin: 10px 0;
 }
 
 /* Avatar Lia */
@@ -176,6 +222,13 @@ button:hover {
   transform: scale(1.05) rotate(-1deg); /* leve interação futurista */
   box-shadow: 0 0 18px rgba(52,152,219,0.9),
               0 0 25px rgba(52,152,219,0.6) inset;
+}
+
+/* Padrão: centralizado */
+#avatar, #liaMessage {
+  justify-content: center;
+  margin: 0 auto;
+  text-align: center;
 }
 
 /* Balão divertido */
@@ -244,6 +297,10 @@ button:hover {
     background: #fff;    /* garante que continue branco mesmo se herdar cor */
   }
 
+  #loginForm button {
+    width: 60%;         /* ocupa boa parte da tela no celular */
+  }
+
   #toggleLoginBtn {
     width: 50%;
     margin: 10px auto;
@@ -259,15 +316,22 @@ button:hover {
   }
 
   [vw-access-button] {
-    bottom: 40px !important;
+    bottom: 60px !important;
     right: 5px !important;
     transform: scale(0.9);
   }
 
   [vw-plugin-wrapper] {
-    bottom: 120px !important;
-    right: -60px !important;
+    bottom: 140px !important;
     transform: scale(0.55) !important;
+  }
+
+  body.vlibras-ativo #avatar,
+  body.vlibras-ativo #liaMessage {
+    justify-content: flex-start;
+    margin-left: 10px;
+    margin-right: auto;
+    text-align: left;
   }
 
 }
