@@ -3,6 +3,7 @@
     "default": "metaday-fatecsebrae"
   },
   "hosting": {
+    "site": "metaday-fatecsebrae",
     "public": ".",
     "ignore": [
       "firebase.json",
