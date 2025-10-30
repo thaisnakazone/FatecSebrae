@@ -322,17 +322,19 @@ button:hover {
   }
 
   [vw-plugin-wrapper] {
-    bottom: 300px !important;
-    right: -20px !important;
-    transform: scale(0.8) !important;
+    top: -400px !important;
+    right: -50px !important;
+    transform: scale(0.9) !important;
   }
 
   body.vlibras-ativo #avatar,
   body.vlibras-ativo #liaMessage {
     justify-content: flex-start;
+    max-width: 220px;     /* mais estreito */
     margin-left: 10px;
     margin-right: auto;
     text-align: left;
+    white-space: normal;  /* permite quebra de linha */
   }
 
 }
