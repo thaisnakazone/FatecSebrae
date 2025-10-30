@@ -24,7 +24,7 @@ body {
     align-items: center;
     text-align: center;
     padding: 0 20px;
-    transform: translateY(-10%); /* diminuir este valor sobe o bloco (ex.: 1% → 0% → -2%) */
+    transform: translateY(-15%); /* diminuir este valor sobe o bloco (ex.: 1% → 0% → -2%) */
   }
 
 /* Subtítulo estilizado */
