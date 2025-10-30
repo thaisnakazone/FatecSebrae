@@ -325,7 +325,7 @@ button:hover {
     max-width: 95vw !important;
     bottom: -10px !important;
     right: -50px !important;
-    transform: scale(0.7) !important;
+    transform: scale(0.6) !important;
     transform-origin: bottom right; /* garante que cresça a partir do canto */
   }
 
