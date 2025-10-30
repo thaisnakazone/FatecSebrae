@@ -264,7 +264,7 @@ button:hover {
 }
 
 #liaMessage strong {
-  color: #c70a36;
+  color: #0a7bc7;
 }
 
 #liaMessage em {
@@ -322,11 +322,9 @@ button:hover {
   }
 
   [vw-plugin-wrapper] {
-    max-width: 95vw !important;
-    bottom: -10px !important;
+    bottom: 400px !important;
     right: -50px !important;
-    transform: scale(0.6) !important;
-    transform-origin: bottom right; /* garante que cresça a partir do canto */
+    transform: scale(0.8) !important;
   }
 
   body.vlibras-ativo #avatar,
