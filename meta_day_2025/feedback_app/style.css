@@ -322,9 +322,11 @@ button:hover {
   }
 
   [vw-plugin-wrapper] {
-    bottom: 10px !important;
+    max-width: 95vw !important;
+    bottom: 240px !important;
     right: -50px !important;
     transform: scale(0.8) !important;
+    transform-origin: bottom right; /* garante que cresça a partir do canto */
   }
 
   body.vlibras-ativo #avatar,
