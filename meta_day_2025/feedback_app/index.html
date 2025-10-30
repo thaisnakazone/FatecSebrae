@@ -41,11 +41,106 @@
 
     <!-- Formulário de envio -->
     <form id="feedbackForm">
-      <label for="nome">Nome:</label><br />
-      <input type="text" id="nome" name="nome" /><br /><br />
 
-      <label for="mensagem">Comentário:</label><br />
-      <textarea id="mensagem" name="mensagem" required></textarea><br /><br />
+      <!-- 1. Perfil -->
+      <div class="question-block">
+        <p class="question">1. Você é:</p>
+        <div class="radio-grid">
+          <div>
+            <input type="radio" name="perfil" value="aluno" required>
+            <label>Aluno(a)</label><br>
+          </div>
+          <div>
+            <input type="radio" name="perfil" value="professor">
+            <label>Professor(a)/Coordenador(a)/Diretor(a)</label><br>
+          </div>
+          <div>
+            <input type="radio" name="perfil" value="visitante">
+            <label>Visitante</label><br>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Avaliação geral -->
+      <div class="question-block">
+        <p class="question">2. Qual a sua avaliação geral sobre o evento Meta Day Fatec Sebrae?</p>
+        <div class="radio-grid">
+          <div>
+            <input type="radio" name="avaliacaoGeral" value="ruim" required>
+            <label>Ruim</label><br>
+          </div>
+          <div>
+            <input type="radio" name="avaliacaoGeral" value="regular">
+            <label>Regular</label><br>
+          </div>
+          <div>
+            <input type="radio" name="avaliacaoGeral" value="bom">
+            <label>Bom</label><br>
+          </div>
+          <div>
+            <input type="radio" name="avaliacaoGeral" value="excelente">
+            <label>Excelente</label><br>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Organização -->
+      <div class="question-block">
+        <p class="question">3. O que achou da organização do evento?</p>
+        <div class="radio-grid">
+          <div>
+            <input type="radio" name="organizacao" value="ruim" required>
+            <label>Ruim</label><br>
+          </div>
+          <div>
+            <input type="radio" name="organizacao" value="regular">
+            <label>Regular</label><br>
+          </div>
+          <div>
+            <input type="radio" name="organizacao" value="bom">
+            <label>Bom</label><br>
+          </div>
+          <div>
+            <input type="radio" name="organizacao" value="excelente">
+            <label>Excelente</label><br>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Áreas de interesse -->
+      <div class="question-block">
+        <p class="question">4. De quais áreas você mais gostou?</p>
+        <div class="radio-grid">
+          <div>
+            <input type="checkbox" name="areas" value="ciencia-dados">
+            <label>Ciência de Dados para Negócios</label>
+          </div>
+          <div>
+            <input type="checkbox" name="areas" value="gestao-negocios">
+            <label>Gestão de Negócios</label>
+          </div>
+          <div>
+            <input type="checkbox" name="areas" value="marketing">
+            <label>Marketing</label>
+          </div>
+          <div>
+            <input type="checkbox" name="areas" value="outras">
+            <label>Outras</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Projeto/palestra favorita -->
+      <div class="question-block">
+        <p class="question">5. Algum projeto ou palestra chamou mais a sua atenção? Qual(is)?</p>
+        <textarea id="favorito" name="favorito" rows="3"></textarea>
+      </div>
+
+      <!-- 6. Comentários -->
+      <div class="question-block">
+        <p class="question">6. Gostaria de deixar algum comentário, sugestão ou reclamação?</p>
+        <textarea id="comentarios" name="comentarios" rows="3"></textarea>
+      </div>
 
       <button type="submit">Enviar</button>
       <p id="statusMsg"></p>

@@ -57,6 +57,40 @@ h1 {
   color: #2c3e50;
 }
 
+.question-block {
+  margin-bottom: 25px; /* espaço entre perguntas */
+}
+
+.question-block p {
+  font-weight: bold;   /* pergunta em negrito */
+  margin-bottom: 10px; /* respiro entre pergunta e opções */
+  text-align: left;    /* garante alinhamento à esquerda */
+}
+
+.radio-grid {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start; /* alinha todas as opções pelo topo */
+  gap: 40px;
+}
+
+.radio-grid div {
+  flex: 1;          /* cada coluna ocupa o mesmo espaço */
+  text-align: left;
+}
+
+.radio-grid label {
+  font-weight: normal; /* respostas sem negrito */
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 12px;   /* largura menor */
+  height: 12px;  /* altura menor */
+  accent-color: #007bff; /* cor de destaque (pode trocar) */
+  cursor: pointer;
+}
+
 /* Formulário de feedback */
 form {
   background: #fff;
@@ -66,7 +100,6 @@ form {
   margin: 20px auto;        /* centraliza horizontalmente */
   box-sizing: border-box;
   width: 50%;
-  max-width: 600px;          /* opcional: limita o tamanho em telas grandes */
   text-align: center;        /* centraliza o conteúdo interno */
 }
 
@@ -324,7 +357,7 @@ button:hover {
   [vw-plugin-wrapper] {
     bottom: 170px !important;
     right: -20px !important;
-    transform: scale(0.75) !important;
+    transform: scale(0.7) !important;
   }
 
   body.vlibras-ativo #avatar,
@@ -335,6 +368,15 @@ button:hover {
     margin-right: auto;
     text-align: left;
     white-space: normal;  /* permite quebra de linha */
+  }
+
+  .radio-grid {
+    flex-direction: column; /* empilha as opções */
+    gap: 15px;              /* espaço vertical entre elas */
+  }
+
+  .radio-grid div {
+    flex: unset; /* remove largura fixa */
   }
 
 }
