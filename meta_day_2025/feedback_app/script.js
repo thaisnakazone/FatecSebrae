@@ -265,11 +265,11 @@ if (form) {
     const favorito = document.getElementById("favorito")?.value?.trim() || "";
     const comentarios = document.getElementById("comentarios")?.value?.trim() || "";
 
-    if (!comentarios && !favorito) {
-      statusMsg.textContent = "❌ Escreva ao menos um comentário ou projeto favorito antes de enviar.";
-      statusMsg.style.color = "red";
-      return;
-    }
+    // if (!comentarios && !favorito) {
+    //   statusMsg.textContent = "❌ Escreva ao menos um comentário ou projeto favorito antes de enviar.";
+    //   statusMsg.style.color = "red";
+    //   return;
+    // }
 
     try {
       await addDoc(collection(db, "feedbacks"), {
