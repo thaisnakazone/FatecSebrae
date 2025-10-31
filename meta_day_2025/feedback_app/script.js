@@ -261,6 +261,52 @@ window.addEventListener("DOMContentLoaded", () => {
   nomeInput = document.getElementById("nomeInicial");
   arrowEl = document.querySelector(".arrow");
 
+  // --- bindings: checkbox "Entrar como anônimo(a)" (colar aqui) ---
+  const entrarAnonimo = document.getElementById('entrarAnonimo');
+
+  if (entrarAnonimo && nomeInput) {
+    let previousValue = '';
+
+    entrarAnonimo.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        // guarda valor atual e preenche com Anônimo(a)
+        previousValue = nomeInput.value || '';
+        nomeInput.value = 'Anônimo(a)';
+        nomeInput.setAttribute('aria-label', 'Nome preenchido automaticamente como Anônimo ou Anônima');
+        nomeInput.readOnly = true;
+        nomeInput.classList.add('disabled');
+
+        // garante que a lógica que mostra a seta rode
+        if (typeof atualizarVisibilidadeSeta === 'function') {
+          atualizarVisibilidadeSeta();
+        } else {
+          nomeInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      } else {
+        // restaura e permite edição
+        nomeInput.readOnly = false;
+        nomeInput.classList.remove('disabled');
+        nomeInput.value = previousValue;
+        nomeInput.focus();
+
+        if (typeof atualizarVisibilidadeSeta === 'function') {
+          atualizarVisibilidadeSeta();
+        } else {
+          nomeInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+    });
+
+    // opcional: se o usuário editar manualmente enquanto não está readonly,
+    // mantemos comportamento normal (não marcamos auto a checkbox)
+    nomeInput.addEventListener('input', () => {
+      if (!nomeInput.readOnly) {
+        // nada extra aqui; o listener já existente atualizarVisibilidadeSeta() cuida da seta
+      }
+    });
+  }
+  // --- fim bindings anon ---
+
   // garante estado inicial de botões (logout escondido) com prioridade
   const loginBtnElInit = document.getElementById("loginBtn");
   const logoutBtnElInit = document.getElementById("logoutBtn");

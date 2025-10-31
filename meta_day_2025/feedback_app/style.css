@@ -155,6 +155,8 @@ body.intro-active .top-bar .top-actions #loginForm {
   margin: 0;
   line-height: 1.2;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  display: block;      /* garante que a margem funcione como esperado */
+  margin-bottom: 12px; /* ajuste o valor para aumentar/diminuir o respiro */
 }
 
 #introName #nomeInicial {
@@ -171,11 +173,49 @@ body.intro-active .top-bar .top-actions #loginForm {
   display: block;
   margin: 0 auto;
 }
+
 #introName #nomeInicial:focus {
   border-color: #6aa6ff;
   box-shadow: 0 6px 18px rgba(106,166,255,0.12);
   transform: translateY(-1px);
 }
+
+/* cor do texto do input */
+#nomeInicial {
+  color: #7b1398;        /* troque pelo hex escolhido */
+  font-weight: 500;
+  caret-color: #0EA5A4;  /* cor do cursor, opcional (use acento da marca) */
+}
+
+/* placeholder mais claro */
+#nomeInicial::placeholder {
+  color: rgba(55,65,81,0.45); /* usando versão translúcida de #374151 */
+}
+
+/* estilo específico para a linha da checkbox "Entrar como anônimo(a)" */
+#introName .anon-row {
+  display: inline-flex;       /* alinha checkbox e texto lado a lado */
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;            /* separação abaixo do input */
+  text-align: left;           /* evita herdar center do label pai */
+  font-weight: 400;           /* ajustar se quiser peso diferente */
+  font-style: italic;
+  font-size: 0.95rem;         /* ligeiramente menor que o label principal */
+  color: #676565;
+  font-family: inherit;       /* herda a família, ou escolha outra */
+}
+
+/* checkbox visual */
+#introName .anon-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+/* remova default cursor e mantenha clique em toda a linha */
+#introName .anon-row { cursor: pointer; }
 
 /* seta */
 .arrow {
@@ -187,10 +227,11 @@ body.intro-active .top-bar .top-actions #loginForm {
   margin-top: 20px;
   animation: float 1.5s infinite ease-in-out;
 }
+
 .arrow.visible { display: block; opacity: 1; }
 .arrow[aria-hidden="true"], .arrow.hidden-by-name {
   opacity: 0;
-  transform: translateY(6px);
+  margin-top: -120px;
   pointer-events: none;
   transition: opacity 220ms ease, transform 220ms ease;
 }
@@ -240,6 +281,25 @@ form#feedbackForm button[type="submit"] {
 .question-block { margin-bottom: 40px; padding: 0 6px !important; }
 .question-block .question { text-align: left !important; margin: 0 0 20px 0; font-weight: 700 !important; }
 .question-block p { font-weight: bold; margin-bottom: 10px; text-align: left; }
+
+/* Alinha checkboxes e textos dentro do bloco "áreas" */
+.question-block.areas .radio-grid > div > label {
+  display: grid;
+  grid-template-columns: 22px 1fr; /* coluna fixa para checkbox, texto flui */
+  column-gap: 10px;
+  align-items: start; /* use center se quiser centralizar verticalmente */
+  padding: 6px 0;
+  min-height: 1.5em;
+  white-space: normal;
+}
+
+.question-block.areas .radio-grid > div > label > input[type="checkbox"] {
+  grid-column: 1;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  align-self: start;
+}
 
 .radio-grid {
   display: flex;
