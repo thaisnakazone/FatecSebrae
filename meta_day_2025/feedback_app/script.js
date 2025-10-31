@@ -115,42 +115,75 @@ function pickFemalePtBrVoice(list) {
 }
 
 function falar(texto) {
-  if (!voicesReady) {
-    voices = speechSynthesis.getVoices() || [];
-    voicesReady = voices.length > 0;
-  }
-  if (!voicesReady) { setTimeout(() => falar(texto), 150); return; }
-  if (speechSynthesis.speaking || speechSynthesis.pending) {
-    try { speechSynthesis.cancel(); } catch (e) {}
-  }
-
-  const utter = new SpeechSynthesisUtterance(texto);
-  utter.lang = "pt-BR";
-  const ua = navigator.userAgent;
-  const isEdge = ua.includes("Edg");
-  const isChrome = ua.includes("Chrome") && !isEdge;
-  utter.rate = isEdge ? 1.2 : 1.0;
-  utter.pitch = 1.05;
-
-  const voz = pickFemalePtBrVoice(voices);
-  if (voz && (isEdge || voz.name.includes("Google"))) { utter.voice = voz; console.log("Usando voz:", voz.name); }
-  else { if (voz) console.log("Voz detectada (não aplicada no Chrome):", voz.name); console.log("Usando voz padrão do navegador."); }
-
-  let started = false;
-  utter.onstart = () => { started = true; animarBoca(); iniciarFallbackBoca(); };
-  utter.onend = () => { pararBoca(); pararFallbackBoca(); };
-  utter.onerror = (e) => { console.warn("Erro na fala:", e); pararBoca(); pararFallbackBoca(); };
-
-  window._activeUtterance = utter;
-  try { speechSynthesis.speak(utter); }
-  catch (e) { console.warn("speak() falhou, tentando com delay:", e); setTimeout(() => { try { speechSynthesis.speak(utter); } catch(e){console.warn(e);} }, 200); }
-
-  setTimeout(() => {
-    if (!started && !speechSynthesis.speaking) {
-      const btn = document.getElementById("ativarSom");
-      if (btn) btn.style.display = "block";
+  return new Promise((resolve) => {
+    if (!voicesReady) {
+      voices = speechSynthesis.getVoices() || [];
+      voicesReady = voices.length > 0;
     }
-  }, 1000);
+    if (!voicesReady) {
+      setTimeout(() => {
+        // tenta novamente mantendo a Promise
+        falar(texto).then(resolve);
+      }, 150);
+      return;
+    }
+
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      try { speechSynthesis.cancel(); } catch (e) {}
+    }
+
+    const utter = new SpeechSynthesisUtterance(texto);
+    utter.lang = "pt-BR";
+    const ua = navigator.userAgent;
+    const isEdge = ua.includes("Edg");
+    const isChrome = ua.includes("Chrome") && !isEdge;
+    utter.rate = isEdge ? 1.2 : 1.0;
+    utter.pitch = 1.05;
+
+    const voz = pickFemalePtBrVoice(voices);
+    if (voz && (isEdge || voz.name.includes("Google"))) {
+      utter.voice = voz;
+      console.log("Usando voz:", voz.name);
+    } else {
+      if (voz) console.log("Voz detectada (não aplicada no Chrome):", voz.name);
+      console.log("Usando voz padrão do navegador.");
+    }
+
+    let started = false;
+    utter.onstart = () => {
+      started = true;
+      animarBoca();
+      iniciarFallbackBoca();
+    };
+    utter.onend = () => {
+      pararBoca();
+      pararFallbackBoca();
+      resolve();
+    };
+    utter.onerror = (e) => {
+      console.warn("Erro na fala:", e);
+      pararBoca();
+      pararFallbackBoca();
+      resolve();
+    };
+
+    window._activeUtterance = utter;
+    try {
+      speechSynthesis.speak(utter);
+    } catch (e) {
+      console.warn("speak() falhou, tentando com delay:", e);
+      setTimeout(() => {
+        try { speechSynthesis.speak(utter); } catch (err) { console.warn(err); resolve(); }
+      }, 200);
+    }
+
+    setTimeout(() => {
+      if (!started && !speechSynthesis.speaking) {
+        const btn = document.getElementById("ativarSom");
+        if (btn) btn.style.display = "block";
+      }
+    }, 1000);
+  });
 }
 
 function startTypewriterAndSpeech() {
