@@ -123,6 +123,17 @@ body.intro-active .top-bar .top-actions #loginForm {
   display: inline-block;
 }
 
+/* neutraliza o skew e o estilo itálico apenas para o emoji */
+#intro .subtitulo .emoji {
+  display: inline-block;            /* necessário para transformar isoladamente */
+  transform: skew(8deg) translateY(-20%);
+  transform-origin: center;
+  font-size: 1em;              /* garante que não fique em itálico */
+  line-height: 1;
+  vertical-align: middle;
+  font-family: "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Noto Emoji", sans-serif;
+}
+
 /* BLOCO NOME */
 #introName {
   display: flex;
