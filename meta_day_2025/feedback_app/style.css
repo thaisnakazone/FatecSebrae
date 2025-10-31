@@ -9,30 +9,109 @@ body {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   background: #f9fafb;
   color: #333;
-  padding: 0; /* antes estava 20px */
+  padding: 0;
   line-height: 1.5;
 }
+
+/* Topo: logos agrupadas à esquerda e ações (Admin) à direita */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px;
+  box-sizing: border-box;
+  width: 100%;
+  background: transparent;
+  z-index: 100;
+}
+
+/* área das marcas (clicável para home) */
+.top-bar .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+/* aplica mesma restrição às imagens usadas no header */
+.top-bar img,
+.brand-logo,
+.top-logo {
+  max-height: 40px;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  opacity: 0.92;
+}
+
+.brand-logo.fatec { margin-left: 0; }
+.brand-logo.cps  { margin-right: 0; }
+
+/* container para ações à direita (Admin) */
+.top-bar .top-actions {
+  display: flex;
+  position: relative;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* estado intro: oculta Admin e dropdown */
+body.intro-active .top-bar .top-actions #toggleLoginBtn,
+body.intro-active .top-bar .top-actions #loginForm {
+  display: none !important;
+}
+
+.top-bar .top-actions #toggleLoginBtn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  min-width: 56px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  line-height: 0.7;
+  box-sizing: border-box;
+  background: #2c3e50;
+  color: #ecf0f1;
+  border: 1.4px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(242, 243, 244, 0.4);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.top-bar .top-actions #toggleLoginBtn:hover { background: #1a242f; }
+
+/* optional wide modifier */
+.top-bar .top-actions #toggleLoginBtn.wide { min-width: 96px; }
+
+/* garante logout oculto até o auth permitir */
+.top-bar .top-actions #logoutBtn { display: none !important; }
 
 /* wrapper para manter espaçamento do restante do conteúdo */
 .site-container {
   padding: 20px;
-  max-width: 1200px; /* opcional, se quiser limitar a largura */
-  margin: 0 auto;    /* opcional, centraliza em telas largas */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Intro principal: ocupa a viewport e centraliza conteúdo */
+/* Intro principal */
 #intro {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* começa do topo */
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
-  padding: 80px 20px 0; /* controla distância do topo */
+  padding: 80px 20px 0;
   box-sizing: border-box;
 }
 
-/* Subtítulo estilizado */
+/* Subtítulo */
 #intro .subtitulo {
   font-size: 1.2rem;
   color: #555;
@@ -44,7 +123,7 @@ body {
   display: inline-block;
 }
 
-/* --- BLOCO ISOLADO DO NOME --- */
+/* BLOCO NOME */
 #introName {
   display: flex;
   flex-direction: column;
@@ -58,7 +137,6 @@ body {
   margin: 0 auto;
 }
 
-/* label específico do intro (menos pesado que o global) */
 #introName label {
   font-weight: 500;
   text-align: center;
@@ -69,7 +147,6 @@ body {
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
 }
 
-/* input específico do intro — evita ser afetado pela regra global */
 #introName #nomeInicial {
   width: 320px;
   max-width: 92%;
@@ -84,15 +161,13 @@ body {
   display: block;
   margin: 0 auto;
 }
-
-/* efeito de foco sutil */
 #introName #nomeInicial:focus {
   border-color: #6aa6ff;
   box-shadow: 0 6px 18px rgba(106,166,255,0.12);
   transform: translateY(-1px);
 }
 
-/* seta (inicialmente oculta; visível via .visible) */
+/* seta */
 .arrow {
   display: none;
   opacity: 0;
@@ -102,51 +177,36 @@ body {
   margin-top: 20px;
   animation: float 1.5s infinite ease-in-out;
 }
-
-.arrow.visible {
-  display: block;
-  opacity: 1;
-}
-
-.arrow[aria-hidden="true"],
-.arrow.hidden-by-name {
+.arrow.visible { display: block; opacity: 1; }
+.arrow[aria-hidden="true"], .arrow.hidden-by-name {
   opacity: 0;
   transform: translateY(6px);
   pointer-events: none;
   transition: opacity 220ms ease, transform 220ms ease;
 }
 
-/* animação de shake */
+/* shake animation */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-6px); }
   60% { transform: translateX(6px); }
 }
-
-.input-required-shake {
-  animation: shake 300ms ease;
-}
+.input-required-shake { animation: shake 300ms ease; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); opacity: 1; }
   50% { transform: translateY(10px); opacity: 0.6; }
 }
 
-/* cria um respiro ao usar scrollIntoView */
-#mainContent {
-  scroll-margin-top: 20px;
-}
+/* mainContent scroll margin */
+#mainContent { scroll-margin-top: 20px; }
 
-/* Título */
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #2c3e50;
-}
+/* Titles and form layout */
+h1 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
 
 form#feedbackForm {
   width: 70%;
-  max-width: 920px;       /* evita ficar gigante em telas ultra-wide */
+  max-width: 920px;
   margin: 16px auto;
   background: #fff;
   padding: 16px 18px;
@@ -157,30 +217,17 @@ form#feedbackForm {
 }
 
 form#feedbackForm button[type="submit"] {
-  width: 40%;        /* 40% da largura do form */
-  max-width: 260px;  /* não cresce além disso */
+  width: 40%;
+  max-width: 260px;
   padding: 12px 16px;
   font-size: 1rem;
   border-radius: 6px;
 }
 
-/* Blocos de pergunta */
-.question-block {
-  margin-bottom: 40px;
-  padding: 0 6px !important;
-}
-
-.question-block .question {
-    text-align: left !important;
-    margin: 0 0 20px 0;
-    font-weight: 700 !important;
-  }
-
-.question-block p {
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: left;
-}
+/* question blocks */
+.question-block { margin-bottom: 40px; padding: 0 6px !important; }
+.question-block .question { text-align: left !important; margin: 0 0 20px 0; font-weight: 700 !important; }
+.question-block p { font-weight: bold; margin-bottom: 10px; text-align: left; }
 
 .radio-grid {
   display: flex;
@@ -188,7 +235,6 @@ form#feedbackForm button[type="submit"] {
   align-items: flex-start;
   flex-wrap: wrap;
 }
-
 .radio-grid > div {
   flex: 1;
   min-width: 160px;
@@ -197,7 +243,6 @@ form#feedbackForm button[type="submit"] {
   flex-direction: column;
   gap: 8px;
 }
-
 .radio-grid label {
   display: inline-flex;
   align-items: center;
@@ -207,7 +252,6 @@ form#feedbackForm button[type="submit"] {
   line-height: 1.2;
   margin: 0;
 }
-
 .radio-grid input[type="radio"],
 .radio-grid input[type="checkbox"] {
   width: 16px;
@@ -219,28 +263,19 @@ form#feedbackForm button[type="submit"] {
   accent-color: #007bff;
 }
 
-/* grid de 4 colunas apenas para a questão com 3 opções */
+/* three-up grid */
 .radio-grid.three-up {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;                /* espaço entre colunas; ajuste conforme desejar */
+  gap: 24px;
   align-items: start;
 }
+.radio-grid.three-up > div:nth-child(1) { grid-column: 1 / 2; }
+.radio-grid.three-up > div:nth-child(2) { grid-column: 2 / 4; }
+.radio-grid.three-up > div:nth-child(3) { grid-column: 4 / 5; }
+.radio-grid.three-up label { display: inline-flex; align-items: center; gap: 10px; margin: 0; }
 
-/* coloca cada div na coluna desejada */
-.radio-grid.three-up > div:nth-child(1) { grid-column: 1 / 2; } /* Aluno */
-.radio-grid.three-up > div:nth-child(2) { grid-column: 2 / 4; } /* Professor centralizado ocupando 2 colunas */
-.radio-grid.three-up > div:nth-child(3) { grid-column: 4 / 5; } /* Visitante */
-
-/* mantém label como inline-flex para alinhamento input + texto */
-.radio-grid.three-up label {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-}
-
-/* Inputs e textareas dentro de formulários mantêm 100% */
+/* Inputs and textareas */
 form input,
 form textarea {
   width: 100%;
@@ -252,9 +287,8 @@ form textarea {
   font-size: 1rem;
 }
 
-/* Controle geral para inputs fora do form (não força 100%) */
-input,
-textarea {
+/* general input fallback */
+input, textarea {
   box-sizing: border-box;
   padding: 10px;
   border-radius: 6px;
@@ -263,32 +297,10 @@ textarea {
   font-size: 1rem;
 }
 
-/* Textarea específico */
-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
+/* Textarea specific */
+textarea { resize: vertical; min-height: 80px; }
 
-/* Botões padrão (consolidado) */
-#toggleLoginBtn {
-  background: #2c3e50;
-  color: #fff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s ease;
-  margin-bottom: 10px;
-  width: 20%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#toggleLoginBtn:hover {
-  background: #1a242f;
-}
-
+/* Buttons default (cleaned) */
 button {
   background: #3498db;
   color: #fff;
@@ -298,38 +310,22 @@ button {
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s ease;
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin: 8px auto 0 auto;
-  width: 40%;
+  width: auto;
 }
+button:hover { background: #2980b9; }
 
-button:hover {
-  background: #2980b9;
-}
+/* logout button */
+#logoutBtn { background: #e74c3c; }
+#logoutBtn:hover { background: #c0392b; }
 
-#logoutBtn {
-  background: #e74c3c;
-}
-
-#logoutBtn:hover {
-  background: #c0392b;
-}
-
-/* Mensagens de status */
-#statusMsg {
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-/* Lista de feedbacks */
-#feedbackList {
-  margin-top: 30px;
-}
-
-#feedbackList h2 {
-  margin-bottom: 15px;
-  color: #2c3e50;
-}
+/* Status, list, items */
+#statusMsg { margin-top: 10px; font-weight: bold; }
+#feedbackList { margin-top: 30px; }
+#feedbackList h2 { margin-bottom: 15px; color: #2c3e50; }
 
 .feedback-item {
   background: #fff;
@@ -338,92 +334,102 @@ button:hover {
   margin-bottom: 12px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
+.feedback-item p { margin: 0 0 8px; font-size: 14px; line-height: 1.4; }
+.feedback-item strong { display: block; margin-bottom: 6px; color: #34495e; }
+.feedback-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); transform: translateY(-2px); transition: all 0.2s ease; }
 
-.feedback-item p {
-  margin: 0 0 8px;
-  font-size: 14px;
-  line-height: 1.4;
-}
+/* =====================
+   Login dropdown (top-bar .top-actions)
+   ===================== */
+.top-bar .top-actions { position: relative; }
 
-.feedback-item strong {
-  display: block;
-  margin-bottom: 6px;
-  color: #34495e;
-}
+/* login form dropdown */
+.top-bar .top-actions #loginForm {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  padding: 12px;
+  z-index: 200;
 
-.feedback-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  transform: translateY(-2px);
-  transition: all 0.2s ease;
-}
-
-/* Login form */
-#loginForm {
-  max-height: 0;
-  overflow: hidden;
   opacity: 0;
-  padding: 0;
-  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  max-height: none;
+  overflow: visible;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 6px;
 }
-
-#loginForm.active {
-  max-height: 1000px;
+.top-bar .top-actions #loginForm.active {
   opacity: 1;
-  padding: 15px;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
-/* regra geral (desktop) para botões dentro do loginForm */
-#loginForm button {
-  width: 20%;
-  margin: 10px 0;
-}
-
-#loginForm input[type="email"],
-#loginForm input[type="password"] {
-  width: 70%;         /* mobile-friendly */
-  max-width: 480px;
+/* inputs inside dropdown */
+.top-bar .top-actions #loginForm input[type="email"],
+.top-bar .top-actions #loginForm input[type="password"] {
+  width: 100%;
+  max-width: 320px;
+  margin: 6px auto;
+  display: block;
   box-sizing: border-box;
   padding: 10px 12px;
-  margin: 6px auto;   /* centraliza quando não ocupa 100% */
-  display: block;
 }
+
+/* buttons inside dropdown - neutralize global shrink */
+#loginForm button,
+.top-bar .top-actions #loginForm button {
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  min-width: 140px;
+  box-sizing: border-box;
+  margin: 8px auto 0 auto;
+  font-size: 0.95rem;
+}
+
+/* specific login/logout sizing */
+.top-bar .top-actions #loginForm #loginBtn,
+.top-bar .top-actions #loginForm #logoutBtn {
+  min-width: 160px;
+  width: auto;
+  align-self: center;
+}
+
+/* make login form elements visually coherent on desktop/mobile */
+.top-bar .top-actions #loginForm { width: 300px; }
+.top-bar .top-actions #loginForm.active { opacity: 1; }
 
 /* Avatar Lia */
-#avatar {
-  display: flex;
-  justify-content: center;
-  margin: 20px auto;
-}
-
+#avatar { display: flex; justify-content: center; margin: 20px auto; }
 #avatarImg {
   width: 200px;
   height: 150px;
   border-radius: 20px;
   object-fit: contain;
   border: 2px solid #3498db;
-  box-shadow: 0 0 12px rgba(52,152,219,0.6),
-              0 0 20px rgba(52,152,219,0.4) inset;
+  box-shadow: 0 0 12px rgba(52,152,219,0.6), 0 0 20px rgba(52,152,219,0.4) inset;
   background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+#avatarImg:hover { transform: scale(1.05) rotate(-1deg); box-shadow: 0 0 18px rgba(52,152,219,0.9), 0 0 25px rgba(52,152,219,0.6) inset; }
 
-#avatarImg:hover {
-  transform: scale(1.05) rotate(-1deg);
-  box-shadow: 0 0 18px rgba(52,152,219,0.9),
-              0 0 25px rgba(52,152,219,0.6) inset;
-}
+/* center defaults */
+#avatar, #liaMessage { justify-content: center; margin: 0 auto; text-align: center; }
 
-/* centraliza padrão */
-#avatar, #liaMessage {
-  justify-content: center;
-  margin: 0 auto;
-  text-align: center;
-}
-
-/* Balão da Lia */
+/* Lia balloon */
 #liaMessage {
   position: relative;
   max-width: 330px;
@@ -441,7 +447,6 @@ button:hover {
   opacity: 0;
   transition: opacity 1s ease;
 }
-
 #liaMessage::before {
   content: "";
   position: absolute;
@@ -453,34 +458,33 @@ button:hover {
   border-color: transparent transparent #fefefe transparent;
   filter: drop-shadow(0 -2px 0 #3498db);
 }
-
-#liaMessage strong {
-  color: #0a7bc7;
-}
-
-#liaMessage em {
-  font-style: normal;
-  font-weight: 600;
-  color: #34495e;
-}
+#liaMessage strong { color: #0a7bc7; }
+#liaMessage em { font-style: normal; font-weight: 600; color: #34495e; }
 
 /* Evita que o VLibras crie uma camada invisível bloqueando cliques */
-[vw] {
-  pointer-events: none;
-}
-[vw] * {
-  pointer-events: auto;
-}
+[vw] { pointer-events: none; }
+[vw] * { pointer-events: auto; }
 
-/* Responsividade */
+/* =====================
+   Responsividade
+   ===================== */
 @media (max-width: 600px) {
-  body {
-    padding: 10px;
+  body { padding: 10px; }
+
+  .top-bar img, .brand-logo, .top-logo { max-height: 34px; }
+
+  .top-bar .top-actions #toggleLoginBtn {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+    min-width: 56px;
+    position: relative;
+    z-index: 1500; /* garante que o botão fique acima do dropdown */
   }
 
   form#feedbackForm {
-    width: 92%;           /* aumenta o espaço interno para labels longas */
+    width: 92%;
     padding: 20px 36px;
+    box-sizing: border-box;
   }
 
   form#feedbackForm button[type="submit"] {
@@ -488,21 +492,75 @@ button:hover {
     max-width: 220px;
   }
 
-  #loginForm button {
-    width: 60%;
+  /* ---------- login dropdown (mobile) - absoluto dentro do topo ---------- */
+  .top-bar .top-actions {
+    position: relative;
+  }
+
+  /* dropdown absoluto — usa especificidade e z-index para evitar conflitos */
+  .top-bar .top-actions #loginForm {
+    position: absolute;
+    right: 8px;
+    top: 56px; /* ajuste conforme altura da top-bar */
+    width: calc(100vw - 16px);
+    max-width: 400px;
+    box-sizing: border-box;
+    padding: 14px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    transition: transform 220ms ease, opacity 200ms ease;
+    transform-origin: top right;
+    transform: scale(0.98);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1400;
+  }
+
+  /* estado ativo controlado por JS (loginForm.classList.add('active')) */
+  .top-bar .top-actions #loginForm.active {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .top-bar .top-actions #toggleLoginBtn.wide { min-width: 56px; }
+
+  /* inputs e botões maiores dentro do dropdown */
+  .top-bar .top-actions #loginForm input,
+  .top-bar .top-actions #loginForm button {
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  /* fallback: garantir logout escondido até o auth permitir */
+  .top-bar .top-actions #logoutBtn { display: none !important; }
+
+  /* manter compatibilidade com outras regras que você tinha */
+  #loginForm button,
+  .top-bar .top-actions #loginForm #loginBtn,
+  .top-bar .top-actions #loginForm #logoutBtn {
+    width: 100%;
+    min-width: 100px;
+    padding: 8px;
+    margin: 8px 0 0 0;
+    box-sizing: border-box;
   }
 
   #loginForm input[type="email"],
   #loginForm input[type="password"] {
-    width: 90%;       /* maior em desktop */
-    max-width: 720px;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
   }
 
   #toggleLoginBtn {
-    width: 50%;
-    margin: 10px auto;
+    width: auto;
+    margin: 10px 0;
     font-size: 1rem;
-    padding: 12px;
+    padding: 10px 12px;
   }
 
   button {
@@ -510,19 +568,11 @@ button:hover {
     margin: 10px auto;
     font-size: 1rem;
     padding: 12px;
+    box-sizing: border-box;
   }
 
-  [vw-access-button] {
-    bottom: 100px !important;
-    right: 5px !important;
-    transform: scale(0.9);
-  }
-
-  [vw-plugin-wrapper] {
-    bottom: 170px !important;
-    right: -20px !important;
-    transform: scale(0.7) !important;
-  }
+  [vw-access-button] { bottom: 100px !important; right: 5px !important; transform: scale(0.9); }
+  [vw-plugin-wrapper] { bottom: 170px !important; right: -20px !important; transform: scale(0.7) !important; }
 
   body.vlibras-ativo #avatar,
   body.vlibras-ativo #liaMessage {
@@ -536,39 +586,18 @@ button:hover {
 
   .radio-grid {
     display: flex;
-    flex-direction: column; /* empilha colunas em uma única coluna */
-    gap: 12px;              /* espaço vertical entre blocos */
-  }
-
-  .radio-grid > div {
-    flex: none;
-    width: 100%;
-    min-width: 0;
-    display: block;
-  }
-
-  .radio-grid label {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .radio-grid input[type="radio"],
-  .radio-grid input[type="checkbox"] {
-    flex: 0 0 auto;
-    margin-right: 10px;
-  }
-
-  .radio-grid.three-up {
-    display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
+  .radio-grid > div { flex: none; width: 100%; min-width: 0; display: block; }
+  .radio-grid label { display: inline-flex; align-items: center; gap: 10px; width: 100%; }
+  .radio-grid input[type="radio"], .radio-grid input[type="checkbox"] { flex: 0 0 auto; margin-right: 10px; }
+
+  .radio-grid.three-up { display: flex; flex-direction: column; gap: 12px; }
   .radio-grid.three-up > div { grid-column: auto; width: 100%; }
 
   /* adapta o bloco do nome no mobile */
-  #introName { max-width: 92%; padding: 8px; }
-  #introName #nomeInicial { width: 92%; min-width: 160px; }
+  #introName { max-width: 92%; padding: 8px; box-sizing: border-box; }
+  #introName #nomeInicial { width: 92%; min-width: 160px; box-sizing: border-box; }
 }

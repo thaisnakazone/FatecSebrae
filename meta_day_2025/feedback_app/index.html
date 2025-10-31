@@ -9,6 +9,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <header class="top-bar">
+    <a href="/" class="brand" aria-label="Home Fatec Sebrae">
+      <img src="logo-fatec-sebrae.png" alt="Fatec Sebrae" class="brand-logo fatec">
+      <img src="logo-cps.png" alt="CPS" class="brand-logo cps">
+    </a>
+
+    <!-- botão existente #toggleLoginBtn será movido para cá via JS; mantenha no HTML original enquanto move -->
+    <div class="top-actions">
+      <!-- Botão para abrir/fechar login -->
+      <button id="toggleLoginBtn" type="button">Admin</button>
+      <!-- Formulário de login escondido por padrão -->
+      <div id="loginForm" aria-hidden="true">
+        <input type="email" id="loginEmail" placeholder="Email" required />
+        <input type="password" id="loginPassword" placeholder="Senha" required />
+        <button id="loginBtn" type="button">Login</button>
+        <button id="logoutBtn" type="button" style="display:none;">Sair</button>
+        <p id="userStatus"></p>
+      </div>
+    </div>
+  </header>
+
   <!-- Seção inicial -->
   <section id="intro">
     <h1>Deixe seu feedback</h1>
@@ -36,18 +58,6 @@
       <!-- Balão de fala da Lia -->
       <div id="liaMessage">
         <p></p>
-      </div>
-
-      <!-- Botão para abrir/fechar login -->
-      <button id="toggleLoginBtn" type="button">Área restrita</button>
-
-      <!-- Formulário de login escondido por padrão -->
-      <div id="loginForm">
-        <input type="email" id="loginEmail" placeholder="Email" required />
-        <input type="password" id="loginPassword" placeholder="Senha" required />
-        <button id="loginBtn" type="button">Login</button>
-        <button id="logoutBtn" type="button" style="display:none;">Sair</button>
-        <p id="userStatus"></p>
       </div>
 
       <!-- Formulário de envio -->

@@ -1,5 +1,5 @@
 // ===============================
-// script.js (integrado: saudação com nome + seta como gatilho + salvar todos campos + retornar ao intro)
+// script.js — final com logs e reset seguro
 // ===============================
 
 // ===============================
@@ -51,7 +51,6 @@ let voicesReady = false;
 let bocaTimer = null;
 
 // DECLARAÇÕES PARA ELEMENTOS USADOS NO BLOCO 8
-// Declaradas com let para evitar redeclaração em outras seções
 let nomeInput;
 let arrowEl;
 
@@ -206,10 +205,8 @@ function startTypewriterAndSpeech() {
 }
 
 // ===============================
-// 4. ELEMENTOS DO DOM
+// 4. ELEMENTOS DO DOM (queries leves; bindings feitos após DOMContentLoaded)
 // ===============================
-const toggleLoginBtn = document.getElementById("toggleLoginBtn");
-const loginForm = document.getElementById("loginForm");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const userStatus = document.getElementById("userStatus");
@@ -218,221 +215,35 @@ const form = document.getElementById("feedbackForm");
 const statusMsg = document.getElementById("statusMsg");
 const feedbackContainer = document.getElementById("feedbackContainer");
 
-// NOTE: nomeInput and arrowEl are assigned after DOMContentLoaded
-
 // ===============================
-// 5. EVENT LISTENERS
+// 5+6+7+8. DOMContentLoaded: bindings seguros, move botão, toggle login, observador auth, listeners form
 // ===============================
+let unsubscribe = null; // para onSnapshot
 
-// Toggle do formulário de login
-if (toggleLoginBtn) {
-  toggleLoginBtn.addEventListener("click", () => {
-    loginForm.classList.toggle("active");
-    toggleLoginBtn.textContent = loginForm.classList.contains("active") ? "Fechar área restrita" : "Área restrita";
-  });
-}
-
-// Login
-if (loginBtn) {
-  loginBtn.addEventListener("click", async () => {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-    try { await signInWithEmailAndPassword(auth, email, password); }
-    catch (error) { console.error("Erro no login:", error); alert("Falha no login. Verifique email e senha."); }
-  });
-}
-
-// Logout
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    const emailEl = document.getElementById("loginEmail");
-    const passEl = document.getElementById("loginPassword");
-    if (emailEl) emailEl.value = ""; if (passEl) passEl.value = "";
-  });
-}
-
-// Envio de feedback (agora salva todos os campos + nome)
-if (form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const nome = (window.userName || nomeInput?.value?.trim() || "Anônimo");
-    const perfil = document.querySelector('input[name="perfil"]:checked')?.value || null;
-    const avaliacaoGeral = document.querySelector('input[name="avaliacaoGeral"]:checked')?.value || null;
-    const organizacao = document.querySelector('input[name="organizacao"]:checked')?.value || null;
-    const areas = Array.from(document.querySelectorAll('input[name="areas"]:checked')).map(el => el.value);
-    const favorito = document.getElementById("favorito")?.value?.trim() || "";
-    const comentarios = document.getElementById("comentarios")?.value?.trim() || "";
-
-    // if (!comentarios && !favorito) {
-    //   statusMsg.textContent = "❌ Escreva ao menos um comentário ou projeto favorito antes de enviar.";
-    //   statusMsg.style.color = "red";
-    //   return;
-    // }
-
-    try {
-      await addDoc(collection(db, "feedbacks"), {
-        nome,
-        perfil,
-        avaliacaoGeral,
-        organizacao,
-        areas,
-        favorito,
-        comentarios,
-        criadoEm: new Date()
-      });
-      form.reset();
-      statusMsg.textContent = "✅ Feedback enviado com sucesso!";
-      statusMsg.style.color = "green";
-      falar("Seu feedback foi enviado com sucesso!");
-
-      // volta para a tela inicial para o próximo usuário
-      voltarParaIntro();
-
-      setTimeout(() => statusMsg.textContent = "", 3000);
-    } catch (error) {
-      console.error("Erro ao salvar feedback:", error);
-      statusMsg.textContent = "❌ Erro ao enviar feedback. Tente novamente.";
-      statusMsg.style.color = "red";
-    }
-  });
-}
-
-// ===============================
-// 6. OBSERVADORES (admin leitura)
-// ===============================
-let unsubscribe = null;
-onAuthStateChanged(auth, (user) => {
-  if (user && user.email === "fatecsebrae@metaday.com.br") {
-    if (loginBtn) loginBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "inline";
-    if (userStatus) userStatus.textContent = `Logado como: ${user.email}`;
-    if (feedbackList) feedbackList.style.display = "block";
-
-    const q = query(collection(db, "feedbacks"), orderBy("criadoEm", "desc"));
-    unsubscribe = onSnapshot(q, (snapshot) => {
-      if (feedbackContainer) feedbackContainer.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className = "feedback-item";
-        div.innerHTML = `
-          <p><strong>Nome</strong> ${data.nome || "-"}</p>
-          <p><strong>Perfil</strong> ${data.perfil || "-"}</p>
-          <p><strong>Avaliação geral</strong> ${data.avaliacaoGeral || "-"}</p>
-          <p><strong>Organização</strong> ${data.organizacao || "-"}</p>
-          <p><strong>Áreas</strong> ${data.areas ? data.areas.join(", ") : "-"}</p>
-          <p><strong>Projeto favorito</strong> ${data.favorito || "-"}</p>
-          <p><strong>Comentários</strong> ${data.comentarios || "-"}</p>
-        `;
-        if (feedbackContainer) feedbackContainer.appendChild(div);
-      });
-    });
-  } else {
-    if (loginBtn) loginBtn.style.display = "inline";
-    if (logoutBtn) logoutBtn.style.display = "none";
-    if (userStatus) userStatus.textContent = "";
-    if (feedbackList) feedbackList.style.display = "none";
-    if (unsubscribe) unsubscribe();
-  }
-});
-
-// ===============================
-// 7. BOTÃO ATIVAR SOM (FALLBACK)
-// ===============================
-const btnAtivarSom = document.getElementById("ativarSom");
-if (btnAtivarSom) {
-  btnAtivarSom.addEventListener("click", () => {
-    btnAtivarSom.style.display = "none";
-    if (window.AudioContext) {
-      try { const ctx = new AudioContext(); if (ctx.state === "suspended") ctx.resume(); } catch (e) {}
-    }
-    carregarVozes();
-    startTypewriterAndSpeech();
-  });
-}
-
-// ===============================
-// 8. SETA E ABERTURA (seta é gatilho; exige nome)
-// ===============================
-
-// Função que abre a UI da Lia, sempre lendo o nome atual do input
-function abrirComLia() {
-  const nomeAtual = (window.userName || nomeInput?.value?.trim() || "").trim();
-  if (!nomeAtual) {
-    alert("Digite seu nome para começar");
-    nomeInput?.focus();
-    return;
-  }
-  window.userName = nomeAtual;
-
-  const intro = document.getElementById("intro");
-  const main = document.getElementById("mainContent");
-
-  if (intro) intro.style.display = "none";
-  if (main) { main.style.display = "block"; main.scrollIntoView({ behavior: "smooth" }); }
-  if (arrowEl) { arrowEl.classList.remove("visible"); arrowEl.style.display = "none"; }
-
-  carregarVozes();
-  startTypewriterAndSpeech();
-}
-
-// --- função helper: volta para a tela inicial após envio ---
-function voltarParaIntro() {
-  // limpa nome guardado
-  window.userName = "";
-
-  // esconde o main e mostra intro
-  const intro = document.getElementById("intro");
-  const main = document.getElementById("mainContent");
-  if (intro) intro.style.display = ""; // deixa a exibição padrão do CSS
-  if (main) main.style.display = "none";
-
-  // limpa e foca o input para próximo usuário
-  if (nomeInput) {
-    nomeInput.value = "";
-    nomeInput.focus();
-
-    // garante que a seta volte oculta (consistente com sua lógica de visibilidade)
-    if (arrowEl) {
-      arrowEl.classList.remove("visible");
-      arrowEl.setAttribute("aria-hidden", "true");
-      arrowEl.style.pointerEvents = "none";
-      // opcional: ocultar depois da transição
-      setTimeout(() => {
-        if (!arrowEl.classList.contains("visible")) {
-          arrowEl.style.display = "none";
-        }
-      }, 260);
-    }
-  }
-}
-
-// ======= Integração: Enter aciona seta e seta só visível quando há nome =======
-// (toda a inicialização que precisa do DOM fica aqui)
 window.addEventListener("DOMContentLoaded", () => {
-  // inicializa referências globais (usadas por outras partes do script)
+  // garante que a página inicie no estado intro (Admin escondido)
+  document.body.classList.add("intro-active");
+
+  // re-queries que dependem do DOM
   nomeInput = document.getElementById("nomeInicial");
   arrowEl = document.querySelector(".arrow");
 
-  if (!nomeInput) {
-    console.warn("input #nomeInicial não encontrado no DOM");
-  }
+  // garante estado inicial de botões (logout escondido) com prioridade
+  const loginBtnElInit = document.getElementById("loginBtn");
+  const logoutBtnElInit = document.getElementById("logoutBtn");
+  if (loginBtnElInit) loginBtnElInit.style.setProperty('display','inline-flex','important');
+  if (logoutBtnElInit) logoutBtnElInit.style.setProperty('display','none','important');
 
-  // garante que a seta comece oculta (CSS também controla opacidade/transição)
-  if (arrowEl) {
-    arrowEl.classList.remove("visible");
-    arrowEl.style.display = "none";
-  }
+  // prepara o estado inicial da seta
+  if (!nomeInput) console.warn("input #nomeInicial não encontrado no DOM");
+  if (arrowEl) { arrowEl.classList.remove("visible"); arrowEl.style.display = "none"; }
 
-  // mostra/oculta a seta conforme o usuário digita
   if (nomeInput && arrowEl) {
     const atualizarVisibilidadeSeta = () => {
       const v = nomeInput.value.trim();
       if (v) {
         arrowEl.style.display = "";
-        void arrowEl.offsetWidth; // force reflow para transição
+        void arrowEl.offsetWidth;
         arrowEl.classList.add("visible");
         arrowEl.setAttribute("aria-hidden", "false");
         arrowEl.style.pointerEvents = "";
@@ -441,9 +252,7 @@ window.addEventListener("DOMContentLoaded", () => {
         arrowEl.setAttribute("aria-hidden", "true");
         arrowEl.style.pointerEvents = "none";
         setTimeout(() => {
-          if (!arrowEl.classList.contains("visible")) {
-            arrowEl.style.display = "none";
-          }
+          if (!arrowEl.classList.contains("visible")) arrowEl.style.display = "none";
         }, 240);
       }
     };
@@ -451,18 +260,15 @@ window.addEventListener("DOMContentLoaded", () => {
     atualizarVisibilidadeSeta();
     nomeInput.addEventListener("input", atualizarVisibilidadeSeta);
 
-    // Enter aciona a seta, somente se houver texto
     nomeInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
         if (nomeInput.value.trim() === "") {
-          // feedback visual curto
           nomeInput.classList.add("input-required-shake");
           setTimeout(() => nomeInput.classList.remove("input-required-shake"), 300);
           nomeInput.focus();
           return;
         }
-        // seta a variável global e reutiliza a função de abertura
         window.userName = nomeInput.value.trim();
         abrirComLia();
       }
@@ -471,8 +277,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const ua = navigator.userAgent;
   const isEdge = ua.includes("Edg");
-
-  // Edge: não iniciar automaticamente; deixa intro visível até o usuário digitar e clicar
   if (isEdge) {
     const intro = document.getElementById("intro");
     const main = document.getElementById("mainContent");
@@ -480,12 +284,10 @@ window.addEventListener("DOMContentLoaded", () => {
     if (main) main.style.display = "none";
   }
 
-  // sempre vincula o clique da seta à função (ela vai ler o input no momento)
   if (arrowEl) {
     arrowEl.addEventListener("click", (e) => {
       e.preventDefault();
       if (!nomeInput || nomeInput.value.trim() === "") {
-        // feedback curto e foco se usuário tentou clicar sem preencher
         nomeInput?.classList.add("input-required-shake");
         setTimeout(() => nomeInput?.classList.remove("input-required-shake"), 300);
         nomeInput?.focus();
@@ -495,7 +297,6 @@ window.addEventListener("DOMContentLoaded", () => {
       abrirComLia();
     });
   } else {
-    // fallback: qualquer clique tenta abrir (verifica nome) — uma vez apenas
     const fallbackClick = (e) => {
       const tag = e.target?.tagName?.toLowerCase();
       if (["input", "button", "a", "textarea", "select"].includes(tag)) return;
@@ -505,6 +306,227 @@ window.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("click", fallbackClick);
   }
 
-  // foco automático no input para melhor UX
   nomeInput?.focus();
-});
+
+  // --- mover/renomear botão e garantir listeners corretos ---
+  const toggleLoginBtnEl = document.getElementById("toggleLoginBtn");
+  const topActions = document.querySelector(".top-bar .top-actions");
+  const loginFormEl = document.getElementById("loginForm");
+  const loginBtnEl = document.getElementById("loginBtn");
+  const logoutBtnEl = document.getElementById("logoutBtn");
+
+  // garante aria-hidden inicial se faltar
+  if (loginFormEl && !loginFormEl.hasAttribute("aria-hidden")) {
+    loginFormEl.setAttribute("aria-hidden", loginFormEl.classList.contains("active") ? "false" : "true");
+  }
+
+  if (toggleLoginBtnEl) {
+    // renomeia e acessibilidade (texto inicial conforme estado)
+    toggleLoginBtnEl.textContent = loginFormEl && loginFormEl.classList.contains("active") ? "Fechar" : "Admin";
+    toggleLoginBtnEl.setAttribute("aria-label", "Administração");
+
+    // move para top-actions se existir (se o elemento já estiver dentro, appendChild apenas garante ordem)
+    if (topActions && toggleLoginBtnEl.parentNode !== topActions) topActions.appendChild(toggleLoginBtnEl);
+
+    // liga listener seguro: substitui por clone para remover listeners antigos
+    const safeBtn = toggleLoginBtnEl.cloneNode(true);
+    toggleLoginBtnEl.parentNode.replaceChild(safeBtn, toggleLoginBtnEl);
+
+    // evento que alterna .active e atualiza aria-hidden
+    safeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (!loginFormEl) return console.warn("loginForm não encontrado");
+      const abriu = loginFormEl.classList.toggle("active");
+      loginFormEl.setAttribute("aria-hidden", abriu ? "false" : "true");
+      safeBtn.textContent = abriu ? "Fechar" : "Admin";
+      if (abriu) safeBtn.classList.add("wide"); else safeBtn.classList.remove("wide");
+      if (abriu) {
+        const email = document.getElementById("loginEmail");
+        setTimeout(() => email?.focus(), 50);
+      }
+    });
+  }
+
+  // --- login / logout bindings (garantidos aqui) ---
+  if (loginBtnEl) {
+    loginBtnEl.addEventListener("click", async () => {
+      const email = document.getElementById("loginEmail")?.value || "";
+      const password = document.getElementById("loginPassword")?.value || "";
+      try { await signInWithEmailAndPassword(auth, email, password); }
+      catch (error) { console.error("Erro no login:", error); alert("Falha no login. Verifique email e senha."); }
+    });
+  }
+
+  if (logoutBtnEl) {
+    logoutBtnEl.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+      } catch (e) { console.warn("Erro ao deslogar:", e); }
+      const emailEl = document.getElementById("loginEmail");
+      const passEl = document.getElementById("loginPassword");
+      if (emailEl) emailEl.value = ""; if (passEl) passEl.value = "";
+    });
+  }
+
+  // --- form envio feedback ---
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nome = (window.userName || nomeInput?.value?.trim() || "Anônimo");
+      const perfil = document.querySelector('input[name="perfil"]:checked')?.value || null;
+      const avaliacaoGeral = document.querySelector('input[name="avaliacaoGeral"]:checked')?.value || null;
+      const organizacao = document.querySelector('input[name="organizacao"]:checked')?.value || null;
+      const areas = Array.from(document.querySelectorAll('input[name="areas"]:checked')).map(el => el.value);
+      const favorito = document.getElementById("favorito")?.value?.trim() || "";
+      const comentarios = document.getElementById("comentarios")?.value?.trim() || "";
+
+      try {
+        await addDoc(collection(db, "feedbacks"), {
+          nome,
+          perfil,
+          avaliacaoGeral,
+          organizacao,
+          areas,
+          favorito,
+          comentarios,
+          criadoEm: new Date()
+        });
+        form.reset();
+        statusMsg.textContent = "✅ Feedback enviado com sucesso!";
+        statusMsg.style.color = "green";
+        falar("Seu feedback foi enviado com sucesso!");
+
+        // volta para a tela inicial para o próximo usuário
+        voltarParaIntro();
+
+        setTimeout(() => statusMsg.textContent = "", 3000);
+      } catch (error) {
+        console.error("Erro ao salvar feedback:", error);
+        statusMsg.textContent = "❌ Erro ao enviar feedback. Tente novamente.";
+        statusMsg.style.color = "red";
+      }
+    });
+  }
+
+  // --- Observador único para auth (mostra/oculta admin UI e, se admin, carrega feedbacks) ---
+  onAuthStateChanged(auth, (user) => {
+    console.log('onAuthStateChanged -> user =', user);
+
+    // re-obter elementos (garante que existam no escopo)
+    const btn = document.getElementById("toggleLoginBtn");
+    const loginBtnEl = document.getElementById("loginBtn");
+    const logoutBtnEl = document.getElementById("logoutBtn");
+    const userStatus = document.getElementById("userStatus");
+    const feedbackList = document.getElementById("feedbackList");
+
+    // RESET PADRÃO: assume não logado (observer é a única fonte de verdade)
+    if (btn) btn.style.setProperty('display','', 'important'); // limpa possíveis valores forçados
+    if (loginBtnEl) loginBtnEl.style.setProperty('display','inline-flex','important');
+    if (logoutBtnEl) logoutBtnEl.style.setProperty('display','none','important');
+    if (userStatus) userStatus.textContent = "";
+    if (feedbackList) feedbackList.style.setProperty('display','none','important');
+
+    // Se for admin, ajusta para mostrar área admin
+    if (user && user.email === "fatecsebrae@metaday.com.br") {
+      if (loginBtnEl) loginBtnEl.style.setProperty('display','none','important');
+      if (logoutBtnEl) logoutBtnEl.style.setProperty('display','inline-flex','important');
+      if (userStatus) userStatus.textContent = `Logado como: ${user.email}`;
+      if (feedbackList) feedbackList.style.setProperty('display','block','important');
+
+      // subscribe aos feedbacks (se for o seu fluxo)
+      const q = query(collection(db, "feedbacks"), orderBy("criadoEm", "desc"));
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        if (feedbackContainer) feedbackContainer.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.className = "feedback-item";
+          div.innerHTML = `
+            <p><strong>Nome</strong> ${data.nome || "-"}</p>
+            <p><strong>Perfil</strong> ${data.perfil || "-"}</p>
+            <p><strong>Avaliação geral</strong> ${data.avaliacaoGeral || "-"}</p>
+            <p><strong>Organização</strong> ${data.organizacao || "-"}</p>
+            <p><strong>Áreas</strong> ${data.areas ? data.areas.join(", ") : "-"}</p>
+            <p><strong>Projeto favorito</strong> ${data.favorito || "-"}</p>
+            <p><strong>Comentários</strong> ${data.comentarios || "-"}</p>
+          `;
+          if (feedbackContainer) feedbackContainer.appendChild(div);
+        });
+      });
+    } else {
+      // não admin: limpa subscription se houver
+      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    }
+  });
+
+  // --- botão ativar som (fallback) ---
+  const btnAtivarSom = document.getElementById("ativarSom");
+  if (btnAtivarSom) {
+    btnAtivarSom.addEventListener("click", () => {
+      btnAtivarSom.style.display = "none";
+      if (window.AudioContext) {
+        try { const ctx = new AudioContext(); if (ctx.state === "suspended") ctx.resume(); } catch (e) {}
+      }
+      carregarVozes();
+      startTypewriterAndSpeech();
+    });
+  }
+
+}); // end DOMContentLoaded
+
+// ===============================
+// 8. Funções auxiliares usadas no DOM (fora do DOMContentLoaded)
+// ===============================
+function abrirComLia() {
+  const nomeAtual = (window.userName || nomeInput?.value?.trim() || "").trim();
+  if (!nomeAtual) {
+    alert("Digite seu nome para começar");
+    nomeInput?.focus();
+    return;
+  }
+  window.userName = nomeAtual;
+
+  // remove estado intro-active para exibir admin no topo
+  document.body.classList.remove("intro-active");
+
+  const intro = document.getElementById("intro");
+  const main = document.getElementById("mainContent");
+
+  if (intro) intro.style.display = "none";
+  if (main) { main.style.display = "block"; window.scrollTo({ top: 0, behavior: "smooth" }); }
+  if (arrowEl) { arrowEl.classList.remove("visible"); arrowEl.style.display = "none"; }
+
+  carregarVozes();
+  startTypewriterAndSpeech();
+}
+
+// --- função helper: volta para a tela inicial após envio ---
+function voltarParaIntro() {
+  window.userName = "";
+
+  // adiciona estado intro-active para ocultar admin no topo
+  document.body.classList.add("intro-active");
+
+  const intro = document.getElementById("intro");
+  const main = document.getElementById("mainContent");
+  if (intro) intro.style.display = "";
+  if (main) main.style.display = "none";
+
+  if (nomeInput) {
+    nomeInput.value = "";
+    nomeInput.focus();
+
+    if (arrowEl) {
+      arrowEl.classList.remove("visible");
+      arrowEl.setAttribute("aria-hidden", "true");
+      arrowEl.style.pointerEvents = "none";
+      setTimeout(() => {
+        if (!arrowEl.classList.contains("visible")) {
+          arrowEl.style.display = "none";
+        }
+      }, 260);
+    }
+  }
+}
