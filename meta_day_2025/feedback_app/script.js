@@ -368,6 +368,29 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // utilitário: fala e resolve quando terminar
+  function speakAndWait(text) {
+    // tenta reutilizar a função falar existente se ela retornar uma Promise
+    if (typeof falar === 'function') {
+      try {
+        const r = falar(text);
+        if (r && typeof r.then === 'function') return r;
+      } catch (e) {
+        // se falar lançar, continua para fallback
+      }
+    }
+
+    return new Promise(resolve => {
+      if (!window.speechSynthesis) return resolve();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1;
+      u.pitch = 1;
+      u.onend = () => resolve();
+      u.onerror = () => resolve();
+      window.speechSynthesis.speak(u);
+    });
+  }
+
   // --- form envio feedback ---
   if (form) {
     form.addEventListener("submit", async (e) => {
@@ -392,15 +415,25 @@ window.addEventListener("DOMContentLoaded", () => {
           comentarios,
           criadoEm: new Date()
         });
+
         form.reset();
-        statusMsg.textContent = "✅ Feedback enviado com sucesso!";
+
+        const mensagem = "✅ Feedback enviado com sucesso!";
+        statusMsg.textContent = mensagem;
         statusMsg.style.color = "green";
-        falar("Seu feedback foi enviado com sucesso!");
+
+        // inicia a fala e aguarda seu término (se existir)
+        await speakAndWait("Seu feedback foi enviado com sucesso!");
+
+        // garante que a mensagem permaneça visível por pelo menos 1500ms após a fala
+        await new Promise(r => setTimeout(r, 1500));
+
+        // limpa a mensagem (opcional: faz isso antes ou depois de voltarParaIntro)
+        statusMsg.textContent = "";
 
         // volta para a tela inicial para o próximo usuário
         voltarParaIntro();
 
-        setTimeout(() => statusMsg.textContent = "", 3000);
       } catch (error) {
         console.error("Erro ao salvar feedback:", error);
         statusMsg.textContent = "❌ Erro ao enviar feedback. Tente novamente.";
