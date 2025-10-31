@@ -603,7 +603,7 @@ button:hover { background: #2980b9; }
     right: 8px;
     top: 56px; /* ajuste conforme altura da top-bar */
     width: calc(100vw - 16px);
-    max-width: 330px;
+    max-width: 320px;
     box-sizing: border-box;
     padding: 14px;
     background: #fff;
