@@ -24,159 +24,162 @@
     <div class="arrow">&#x25BC;</div>
   </section>
 
-  <!-- Seção principal (inicialmente escondida) -->
-  <section id="mainContent" style="display:none;">
-    <!-- Avatar Lia -->
-    <div id="avatar" style="text-align:center; margin-bottom:20px;">
-      <img id="avatarImg" src="avatar_fechada.png" alt="Avatar Lia" width="120">
-    </div>
+  <div class="site-container">
 
-    <!-- Balão de fala da Lia -->
-    <div id="liaMessage">
-      <p></p>
-    </div>
+    <!-- Seção principal (inicialmente escondida) -->
+    <section id="mainContent" style="display:none;">
+      <!-- Avatar Lia -->
+      <div id="avatar" style="text-align:center; margin-bottom:20px;">
+        <img id="avatarImg" src="avatar_fechada.png" alt="Avatar Lia" width="120">
+      </div>
 
-    <!-- Botão para abrir/fechar login -->
-    <button id="toggleLoginBtn" type="button">Área restrita</button>
+      <!-- Balão de fala da Lia -->
+      <div id="liaMessage">
+        <p></p>
+      </div>
 
-    <!-- Formulário de login escondido por padrão -->
-    <div id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Email" required />
-      <input type="password" id="loginPassword" placeholder="Senha" required />
-      <button id="loginBtn" type="button">Login</button>
-      <button id="logoutBtn" type="button" style="display:none;">Sair</button>
-      <p id="userStatus"></p>
-    </div>
+      <!-- Botão para abrir/fechar login -->
+      <button id="toggleLoginBtn" type="button">Área restrita</button>
 
-    <!-- Formulário de envio -->
-    <form id="feedbackForm">
-      <!-- 1. Perfil -->
-      <div class="question-block">
-        <p class="question">1. Você é:</p>
-        <div class="radio-grid three-up"> <!-- adicione "three-up" aqui -->
-          <div>
-            <label><input type="radio" name="perfil" value="aluno" required> Aluno(a)</label>
-          </div>
-          <div>
-            <label><input type="radio" name="perfil" value="professor"> Professor(a) / Coordenador(a) / Diretor(a)</label>
-          </div>
-          <div>
-            <label><input type="radio" name="perfil" value="visitante"> Visitante</label>
+      <!-- Formulário de login escondido por padrão -->
+      <div id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required />
+        <input type="password" id="loginPassword" placeholder="Senha" required />
+        <button id="loginBtn" type="button">Login</button>
+        <button id="logoutBtn" type="button" style="display:none;">Sair</button>
+        <p id="userStatus"></p>
+      </div>
+
+      <!-- Formulário de envio -->
+      <form id="feedbackForm">
+        <!-- 1. Perfil -->
+        <div class="question-block">
+          <p class="question">1. Você é:</p>
+          <div class="radio-grid three-up"> <!-- adicione "three-up" aqui -->
+            <div>
+              <label><input type="radio" name="perfil" value="aluno" required> Aluno(a)</label>
+            </div>
+            <div>
+              <label><input type="radio" name="perfil" value="professor"> Professor(a) / Coordenador(a) / Diretor(a)</label>
+            </div>
+            <div>
+              <label><input type="radio" name="perfil" value="visitante"> Visitante</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 2. Avaliação geral -->
-      <div class="question-block">
-        <p class="question">2. Qual a sua avaliação geral sobre o evento Meta Day Fatec Sebrae?</p>
-        <div class="radio-grid">
-          <div>
-            <label><input type="radio" name="avaliacaoGeral" value="ruim" required> Ruim</label>
-          </div>
-          <div>
-            <label><input type="radio" name="avaliacaoGeral" value="regular"> Regular</label>
-          </div>
-          <div>
-            <label><input type="radio" name="avaliacaoGeral" value="bom"> Bom</label>
-          </div>
-          <div>
-            <label><input type="radio" name="avaliacaoGeral" value="excelente"> Excelente</label>
+        <!-- 2. Avaliação geral -->
+        <div class="question-block">
+          <p class="question">2. Qual a sua avaliação geral sobre o evento Meta Day Fatec Sebrae?</p>
+          <div class="radio-grid">
+            <div>
+              <label><input type="radio" name="avaliacaoGeral" value="ruim" required> Ruim</label>
+            </div>
+            <div>
+              <label><input type="radio" name="avaliacaoGeral" value="regular"> Regular</label>
+            </div>
+            <div>
+              <label><input type="radio" name="avaliacaoGeral" value="bom"> Bom</label>
+            </div>
+            <div>
+              <label><input type="radio" name="avaliacaoGeral" value="excelente"> Excelente</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 3. Organização -->
-      <div class="question-block">
-        <p class="question">3. O que achou da organização do evento?</p>
-        <div class="radio-grid">
-          <div>
-            <label><input type="radio" name="organizacao" value="ruim" required> Ruim</label>
-          </div>
-          <div>
-            <label><input type="radio" name="organizacao" value="regular"> Regular</label>
-          </div>
-          <div>
-            <label><input type="radio" name="organizacao" value="bom"> Bom</label>
-          </div>
-          <div>
-            <label><input type="radio" name="organizacao" value="excelente"> Excelente</label>
+        <!-- 3. Organização -->
+        <div class="question-block">
+          <p class="question">3. O que achou da organização do evento?</p>
+          <div class="radio-grid">
+            <div>
+              <label><input type="radio" name="organizacao" value="ruim" required> Ruim</label>
+            </div>
+            <div>
+              <label><input type="radio" name="organizacao" value="regular"> Regular</label>
+            </div>
+            <div>
+              <label><input type="radio" name="organizacao" value="bom"> Bom</label>
+            </div>
+            <div>
+              <label><input type="radio" name="organizacao" value="excelente"> Excelente</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 4. Áreas de interesse -->
-      <div class="question-block">
-        <p class="question">4. De quais áreas você mais gostou?</p>
-        <div class="radio-grid">
-          <div>
-            <label><input type="checkbox" name="areas" value="ciencia-dados"> Ciência de Dados para Negócios</label>
-          </div>
-          <div>
-            <label><input type="checkbox" name="areas" value="gestao-negocios"> Gestão de Negócios e Inovação</label>
-          </div>
-          <div>
-            <label><input type="checkbox" name="areas" value="marketing"> Marketing</label>
-          </div>
-          <div>
-            <label><input type="checkbox" name="areas" value="outras"> Outras</label>
+        <!-- 4. Áreas de interesse -->
+        <div class="question-block">
+          <p class="question">4. De quais áreas você mais gostou?</p>
+          <div class="radio-grid">
+            <div>
+              <label><input type="checkbox" name="areas" value="ciencia-dados"> Ciência de Dados para Negócios</label>
+            </div>
+            <div>
+              <label><input type="checkbox" name="areas" value="gestao-negocios"> Gestão de Negócios e Inovação</label>
+            </div>
+            <div>
+              <label><input type="checkbox" name="areas" value="marketing"> Marketing</label>
+            </div>
+            <div>
+              <label><input type="checkbox" name="areas" value="outras"> Outras</label>
+            </div>
           </div>
         </div>
+
+        <!-- 5. Projeto/palestra favorita -->
+        <div class="question-block">
+          <p class="question">5. Algum projeto ou palestra chamou mais a sua atenção? Qual(is)?</p>
+          <textarea id="favorito" name="favorito" rows="3"></textarea>
+        </div>
+
+        <!-- 6. Comentários -->
+        <div class="question-block">
+          <p class="question">6. Gostaria de deixar algum comentário, sugestão ou reclamação?</p>
+          <textarea id="comentarios" name="comentarios" rows="3"></textarea>
+        </div>
+
+        <button type="submit">Enviar</button>
+        <p id="statusMsg"></p>
+      </form>
+
+      <!-- Container para listagem -->
+      <div id="feedbackList" style="display:none;">
+        <h2>Feedbacks enviados</h2>
+        <div id="feedbackContainer"></div>
       </div>
+    </section>
 
-      <!-- 5. Projeto/palestra favorita -->
-      <div class="question-block">
-        <p class="question">5. Algum projeto ou palestra chamou mais a sua atenção? Qual(is)?</p>
-        <textarea id="favorito" name="favorito" rows="3"></textarea>
+    <!-- VLibras -->
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
       </div>
-
-      <!-- 6. Comentários -->
-      <div class="question-block">
-        <p class="question">6. Gostaria de deixar algum comentário, sugestão ou reclamação?</p>
-        <textarea id="comentarios" name="comentarios" rows="3"></textarea>
-      </div>
-
-      <button type="submit">Enviar</button>
-      <p id="statusMsg"></p>
-    </form>
-
-    <!-- Container para listagem -->
-    <div id="feedbackList" style="display:none;">
-      <h2>Feedbacks enviados</h2>
-      <div id="feedbackContainer"></div>
     </div>
-  </section>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
 
-  <!-- VLibras -->
-  <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
-    </div>
+    <script>
+      const body = document.body;
+      const wrapper = document.querySelector('[vw-plugin-wrapper]');
+
+      // Observa mudanças no wrapper do VLibras
+      if (wrapper) {
+        const obs = new MutationObserver(() => {
+          const visible = wrapper.offsetParent !== null && wrapper.style.display !== 'none';
+          if (visible) {
+            body.classList.add('vlibras-ativo');
+          } else {
+            body.classList.remove('vlibras-ativo');
+          }
+        });
+        obs.observe(wrapper, { attributes: true, attributeFilter: ['style', 'class'] });
+      }
+    </script>
+
+    <!-- Seu script principal -->
+    <script type="module" src="script.js"></script>
   </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
-
-  <script>
-    const body = document.body;
-    const wrapper = document.querySelector('[vw-plugin-wrapper]');
-
-    // Observa mudanças no wrapper do VLibras
-    if (wrapper) {
-      const obs = new MutationObserver(() => {
-        const visible = wrapper.offsetParent !== null && wrapper.style.display !== 'none';
-        if (visible) {
-          body.classList.add('vlibras-ativo');
-        } else {
-          body.classList.remove('vlibras-ativo');
-        }
-      });
-      obs.observe(wrapper, { attributes: true, attributeFilter: ['style', 'class'] });
-    }
-  </script>
-
-  <!-- Seu script principal -->
-  <script type="module" src="script.js"></script>
 </body>
 </html>

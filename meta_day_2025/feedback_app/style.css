@@ -9,8 +9,15 @@ body {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   background: #f9fafb;
   color: #333;
-  padding: 20px;
+  padding: 0; /* antes estava 20px */
   line-height: 1.5;
+}
+
+/* wrapper para manter espaçamento do restante do conteúdo */
+.site-container {
+  padding: 20px;
+  max-width: 1200px; /* opcional, se quiser limitar a largura */
+  margin: 0 auto;    /* opcional, centraliza em telas largas */
 }
 
 /* Intro principal: ocupa a viewport e centraliza conteúdo */
@@ -99,6 +106,25 @@ body {
 .arrow.visible {
   display: block;
   opacity: 1;
+}
+
+.arrow[aria-hidden="true"],
+.arrow.hidden-by-name {
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+/* animação de shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+}
+
+.input-required-shake {
+  animation: shake 300ms ease;
 }
 
 @keyframes float {

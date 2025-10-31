@@ -1,5 +1,5 @@
 // ===============================
-// script.js (integrado: saudação com nome + seta como gatilho + salvar todos campos)
+// script.js (integrado: saudação com nome + seta como gatilho + salvar todos campos + retornar ao intro)
 // ===============================
 
 // ===============================
@@ -286,6 +286,10 @@ if (form) {
       statusMsg.textContent = "✅ Feedback enviado com sucesso!";
       statusMsg.style.color = "green";
       falar("Seu feedback foi enviado com sucesso!");
+
+      // volta para a tela inicial para o próximo usuário
+      voltarParaIntro();
+
       setTimeout(() => statusMsg.textContent = "", 3000);
     } catch (error) {
       console.error("Erro ao salvar feedback:", error);
@@ -353,8 +357,6 @@ if (btnAtivarSom) {
 // 8. SETA E ABERTURA (seta é gatilho; exige nome)
 // ===============================
 
-// NOTE: nomeInput and arrowEl are assigned inside DOMContentLoaded block below
-
 // Função que abre a UI da Lia, sempre lendo o nome atual do input
 function abrirComLia() {
   const nomeAtual = (window.userName || nomeInput?.value?.trim() || "").trim();
@@ -376,8 +378,41 @@ function abrirComLia() {
   startTypewriterAndSpeech();
 }
 
-// DOM ready: vincula listeners que precisam do DOM e inicializa nomeInput/arrowEl
+// --- função helper: volta para a tela inicial após envio ---
+function voltarParaIntro() {
+  // limpa nome guardado
+  window.userName = "";
+
+  // esconde o main e mostra intro
+  const intro = document.getElementById("intro");
+  const main = document.getElementById("mainContent");
+  if (intro) intro.style.display = ""; // deixa a exibição padrão do CSS
+  if (main) main.style.display = "none";
+
+  // limpa e foca o input para próximo usuário
+  if (nomeInput) {
+    nomeInput.value = "";
+    nomeInput.focus();
+
+    // garante que a seta volte oculta (consistente com sua lógica de visibilidade)
+    if (arrowEl) {
+      arrowEl.classList.remove("visible");
+      arrowEl.setAttribute("aria-hidden", "true");
+      arrowEl.style.pointerEvents = "none";
+      // opcional: ocultar depois da transição
+      setTimeout(() => {
+        if (!arrowEl.classList.contains("visible")) {
+          arrowEl.style.display = "none";
+        }
+      }, 260);
+    }
+  }
+}
+
+// ======= Integração: Enter aciona seta e seta só visível quando há nome =======
+// (toda a inicialização que precisa do DOM fica aqui)
 window.addEventListener("DOMContentLoaded", () => {
+  // inicializa referências globais (usadas por outras partes do script)
   nomeInput = document.getElementById("nomeInicial");
   arrowEl = document.querySelector(".arrow");
 
@@ -393,18 +428,43 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // mostra/oculta a seta conforme o usuário digita
   if (nomeInput && arrowEl) {
-    nomeInput.addEventListener("input", () => {
+    const atualizarVisibilidadeSeta = () => {
       const v = nomeInput.value.trim();
       if (v) {
         arrowEl.style.display = "";
-        setTimeout(() => arrowEl.classList.add("visible"), 10);
+        void arrowEl.offsetWidth; // force reflow para transição
+        arrowEl.classList.add("visible");
+        arrowEl.setAttribute("aria-hidden", "false");
+        arrowEl.style.pointerEvents = "";
       } else {
         arrowEl.classList.remove("visible");
+        arrowEl.setAttribute("aria-hidden", "true");
+        arrowEl.style.pointerEvents = "none";
         setTimeout(() => {
           if (!arrowEl.classList.contains("visible")) {
             arrowEl.style.display = "none";
           }
         }, 240);
+      }
+    };
+
+    atualizarVisibilidadeSeta();
+    nomeInput.addEventListener("input", atualizarVisibilidadeSeta);
+
+    // Enter aciona a seta, somente se houver texto
+    nomeInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (nomeInput.value.trim() === "") {
+          // feedback visual curto
+          nomeInput.classList.add("input-required-shake");
+          setTimeout(() => nomeInput.classList.remove("input-required-shake"), 300);
+          nomeInput.focus();
+          return;
+        }
+        // seta a variável global e reutiliza a função de abertura
+        window.userName = nomeInput.value.trim();
+        abrirComLia();
       }
     });
   }
@@ -424,20 +484,27 @@ window.addEventListener("DOMContentLoaded", () => {
   if (arrowEl) {
     arrowEl.addEventListener("click", (e) => {
       e.preventDefault();
+      if (!nomeInput || nomeInput.value.trim() === "") {
+        // feedback curto e foco se usuário tentou clicar sem preencher
+        nomeInput?.classList.add("input-required-shake");
+        setTimeout(() => nomeInput?.classList.remove("input-required-shake"), 300);
+        nomeInput?.focus();
+        return;
+      }
+      window.userName = nomeInput.value.trim();
       abrirComLia();
     });
   } else {
-    // fallback: qualquer clique tenta abrir (verifica nome)
-    document.addEventListener(
-      "click",
-      function fallbackClick() {
-        abrirComLia();
-        document.removeEventListener("click", fallbackClick);
-      },
-      { once: true }
-    );
+    // fallback: qualquer clique tenta abrir (verifica nome) — uma vez apenas
+    const fallbackClick = (e) => {
+      const tag = e.target?.tagName?.toLowerCase();
+      if (["input", "button", "a", "textarea", "select"].includes(tag)) return;
+      abrirComLia();
+      document.removeEventListener("click", fallbackClick);
+    };
+    document.addEventListener("click", fallbackClick);
   }
 
-  // opcional: foco automático no input ao carregar para melhor UX
+  // foco automático no input para melhor UX
   nomeInput?.focus();
 });
