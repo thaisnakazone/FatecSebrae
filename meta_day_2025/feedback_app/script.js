@@ -576,15 +576,17 @@ function voltarParaIntro() {
   document.body.classList.add("intro-active");
 
   const intro = document.getElementById("intro");
-  const main = document.getElementById("mainContent");
+  const main = document.getElementById("mainContent"); // única declaração de main
   if (intro) intro.style.display = "";
   if (main) main.style.display = "none";
 
-  if (nomeInput) {
+  // se essas variáveis estiverem no escopo global/externo, ok;
+  // caso contrário, substitua por document.getElementById(...)
+  if (typeof nomeInput !== 'undefined' && nomeInput) {
     nomeInput.value = "";
     nomeInput.focus();
 
-    if (arrowEl) {
+    if (typeof arrowEl !== 'undefined' && arrowEl) {
       arrowEl.classList.remove("visible");
       arrowEl.setAttribute("aria-hidden", "true");
       arrowEl.style.pointerEvents = "none";
@@ -595,4 +597,18 @@ function voltarParaIntro() {
       }, 260);
     }
   }
+
+  // garantir restauração manual do scroll do history (executar apenas uma vez no boot seria ideal)
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  // rolar o container principal (se existir) e a janela para o topo
+  if (main) {
+    // sem comportamento smooth aqui se quiser garantir posição imediata:
+    main.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // garantir que o header entre em vista
+  const header = document.querySelector('header') || document.getElementById('header');
+  if (header) header.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
