@@ -565,6 +565,27 @@ button:hover { background: #2980b9; }
   transform: translateX(-50%) translateY(0);
 }
 
+.site-footer {
+  padding: 16px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #666;
+  background: transparent;
+}
+
+.site-footer .credits a {
+  color: inherit;
+  text-decoration: underline;
+  margin: 0 4px;
+}
+
+.site-footer .credits a:focus,
+.site-footer .credits a:hover {
+  color: #0a84ff;
+  outline: none;
+  text-decoration: none;
+}
+
 /* =====================
    Responsividade
    ===================== */
