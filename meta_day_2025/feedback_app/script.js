@@ -114,6 +114,41 @@ function pickFemalePtBrVoice(list) {
   return list.find(v => v.lang === "pt-BR") || null;
 }
 
+// função auxiliar: preferir voz Google feminina pt-BR quando possível
+function pickGoogleFemalePtBrVoice(list) {
+  list = list || (speechSynthesis.getVoices ? speechSynthesis.getVoices() : []);
+  if (!list || !list.length) return null;
+
+  const candidates = [];
+
+  list.forEach(v => {
+    const name = (v.name || "").toLowerCase();
+    const lang = (v.lang || "").toLowerCase();
+
+    // prioridade muito alta: contém "google" e é pt-BR / português
+    if (name.includes('google') && (lang === 'pt-br' || name.includes('português') || name.includes('portugues'))) {
+      candidates.push({ v, score: 120 });
+    }
+
+    // nomes observados específicos
+    if (name.includes('google português') || name.includes('google portugues') || name.includes('google portuguese')) {
+      candidates.push({ v, score: 100 });
+    }
+
+    // pt-BR com indicação feminina no nome
+    if (lang === 'pt-br') {
+      let s = 60;
+      if (name.includes('female') || name.includes('woman') || name.includes('maria') || name.includes('francisca') || name.includes('female')) s += 20;
+      candidates.push({ v, score: s });
+    }
+  });
+
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates[0].v || null;
+}
+
+// função falar() atualizada — substitua sua versão por esta
 function falar(texto) {
   return new Promise((resolve) => {
     if (!voicesReady) {
@@ -139,13 +174,17 @@ function falar(texto) {
     utter.rate = isEdge ? 1.2 : 1.0;
     utter.pitch = 1.05;
 
-    const voz = pickFemalePtBrVoice(voices);
-    if (voz && (isEdge || voz.name.includes("Google"))) {
-      utter.voice = voz;
-      console.log("Usando voz:", voz.name);
+    // tentativa agressiva de escolher voz Google feminina pt-BR; se não achar, usa seu fallback existente
+    const voz = pickGoogleFemalePtBrVoice(voices) || pickFemalePtBrVoice(voices) || null;
+    if (voz) {
+      try {
+        utter.voice = voz;
+        console.log("Voz selecionada:", voz.name, voz.lang);
+      } catch (e) {
+        console.warn("Não foi possível aplicar a voz selecionada:", e);
+      }
     } else {
-      if (voz) console.log("Voz detectada (não aplicada no Chrome):", voz.name);
-      console.log("Usando voz padrão do navegador.");
+      console.log("Nenhuma voz pt-BR específica encontrada; usando voz padrão do navegador.");
     }
 
     let started = false;
