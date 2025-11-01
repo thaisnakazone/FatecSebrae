@@ -114,35 +114,33 @@ function pickFemalePtBrVoice(list) {
   return list.find(v => v.lang === "pt-BR") || null;
 }
 
-// função auxiliar: preferir voz Google feminina pt-BR quando possível
+// preferência exata pela voz Google feminina pt-BR
 function pickGoogleFemalePtBrVoice(list) {
   list = list || (speechSynthesis.getVoices ? speechSynthesis.getVoices() : []);
   if (!list || !list.length) return null;
 
+  // 1) correspondência exata com o name que você obteve
+  const exactName = 'Google português do Brasil pt-BR';
+  const exact = list.find(v => (v.name || '').trim().toLowerCase() === exactName.toLowerCase());
+  if (exact) return exact;
+
+  // 2) correspondência por aproximação (casos variados)
+  const approx = list.find(v => /google/i.test(v.name) && /pt[-_ ]?br/i.test(v.lang) || /google/i.test(v.name) && /pt[-_ ]?br/i.test(v.name));
+  if (approx) return approx;
+
+  // 3) heurística robusta como fallback
   const candidates = [];
-
   list.forEach(v => {
-    const name = (v.name || "").toLowerCase();
-    const lang = (v.lang || "").toLowerCase();
-
-    // prioridade muito alta: contém "google" e é pt-BR / português
-    if (name.includes('google') && (lang === 'pt-br' || name.includes('português') || name.includes('portugues'))) {
-      candidates.push({ v, score: 120 });
-    }
-
-    // nomes observados específicos
-    if (name.includes('google português') || name.includes('google portugues') || name.includes('google portuguese')) {
-      candidates.push({ v, score: 100 });
-    }
-
-    // pt-BR com indicação feminina no nome
-    if (lang === 'pt-br') {
+    const name = (v.name || '').toLowerCase();
+    const lang = (v.lang || '').toLowerCase();
+    if (/google/i.test(name) && /pt-?br/.test(lang)) candidates.push({ v, score: 120 });
+    if (name.includes('google português') || name.includes('google portugues') || name.includes('google portuguese')) candidates.push({ v, score: 100 });
+    if (/pt-?br/.test(lang)) {
       let s = 60;
-      if (name.includes('female') || name.includes('woman') || name.includes('maria') || name.includes('francisca') || name.includes('female')) s += 20;
+      if (/maria|francisca|female|woman|feminine/.test(name)) s += 20;
       candidates.push({ v, score: s });
     }
   });
-
   if (!candidates.length) return null;
   candidates.sort((a, b) => b.score - a.score);
   return candidates[0].v || null;
