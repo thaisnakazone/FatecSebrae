@@ -1,5 +1,5 @@
 // ===============================
-// script.js — final com logs e reset seguro
+// script.js — final com click-outside mobile-friendly (avatar removido como autorizador)
 // ===============================
 
 // ===============================
@@ -122,7 +122,6 @@ function falar(texto) {
     }
     if (!voicesReady) {
       setTimeout(() => {
-        // tenta novamente mantendo a Promise
         falar(texto).then(resolve);
       }, 150);
       return;
@@ -269,10 +268,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
     entrarAnonimo.addEventListener('change', (e) => {
       if (e.target.checked) {
-        // guarda valor atual e preenche com Anônimo(a)
+        // guarda valor atual e preenche com Pessoa anônima
         previousValue = nomeInput.value || '';
-        nomeInput.value = 'Anônimo(a)';
-        nomeInput.setAttribute('aria-label', 'Nome preenchido automaticamente como Anônimo ou Anônima');
+        nomeInput.value = 'Pessoa anônima';
+        nomeInput.setAttribute('aria-label', 'Nome preenchido automaticamente como Pessoa anônima');
         nomeInput.readOnly = true;
         nomeInput.classList.add('disabled');
 
@@ -297,11 +296,9 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // opcional: se o usuário editar manualmente enquanto não está readonly,
-    // mantemos comportamento normal (não marcamos auto a checkbox)
     nomeInput.addEventListener('input', () => {
       if (!nomeInput.readOnly) {
-        // nada extra aqui; o listener já existente atualizarVisibilidadeSeta() cuida da seta
+        // sem ação extra; atualizarVisibilidadeSeta já cuida
       }
     });
   }
@@ -410,23 +407,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // move para top-actions se existir (se o elemento já estiver dentro, appendChild apenas garante ordem)
     if (topActions && toggleLoginBtnEl.parentNode !== topActions) topActions.appendChild(toggleLoginBtnEl);
 
-    // liga listener seguro: substitui por clone para remover listeners antigos
-    const safeBtn = toggleLoginBtnEl.cloneNode(true);
-    toggleLoginBtnEl.parentNode.replaceChild(safeBtn, toggleLoginBtnEl);
-
-    // evento que alterna .active e atualiza aria-hidden
-    safeBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (!loginFormEl) return console.warn("loginForm não encontrado");
-      const abriu = loginFormEl.classList.toggle("active");
-      loginFormEl.setAttribute("aria-hidden", abriu ? "false" : "true");
-      safeBtn.textContent = abriu ? "Fechar" : "Admin";
-      if (abriu) safeBtn.classList.add("wide"); else safeBtn.classList.remove("wide");
-      if (abriu) {
-        const email = document.getElementById("loginEmail");
-        setTimeout(() => email?.focus(), 50);
-      }
-    });
+    // substituímos a clonagem anterior; o handler robusto é adicionado mais abaixo
   }
 
   // --- login / logout bindings (garantidos aqui) ---
@@ -479,7 +460,7 @@ window.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const nome = (window.userName || nomeInput?.value?.trim() || "Anônimo");
+      const nome = (window.userName || nomeInput?.value?.trim() || "Pessoa anônima");
       const perfil = document.querySelector('input[name="perfil"]:checked')?.value || null;
       const avaliacaoGeral = document.querySelector('input[name="avaliacaoGeral"]:checked')?.value || null;
       const organizacao = document.querySelector('input[name="organizacao"]:checked')?.value || null;
@@ -511,7 +492,7 @@ window.addEventListener("DOMContentLoaded", () => {
         // garante que a mensagem permaneça visível por pelo menos 1500ms após a fala
         await new Promise(r => setTimeout(r, 1500));
 
-        // limpa a mensagem (opcional: faz isso antes ou depois de voltarParaIntro)
+        // limpa a mensagem
         statusMsg.textContent = "";
 
         // volta para a tela inicial para o próximo usuário
@@ -537,7 +518,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const feedbackList = document.getElementById("feedbackList");
 
     // RESET PADRÃO: assume não logado (observer é a única fonte de verdade)
-    if (btn) btn.style.setProperty('display','', 'important'); // limpa possíveis valores forçados
+    if (btn) btn.style.setProperty('display','', 'important');
     if (loginBtnEl) loginBtnEl.style.setProperty('display','inline-flex','important');
     if (logoutBtnEl) logoutBtnEl.style.setProperty('display','none','important');
     if (userStatus) userStatus.textContent = "";
@@ -590,6 +571,116 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- toggler handlers e click-outside mobile-friendly (somente toggler abre) ---
+  (function () {
+    const loginForm = document.getElementById('loginForm');
+    if (!loginForm) return console.warn('[login] #loginForm não encontrado (click-outside não habilitado)');
+
+    const togglerSelector = '#toggleLoginBtn';
+    const toggler = document.querySelector(togglerSelector);
+
+    let outsideAttached = false;
+    let lastToggleAt = 0;
+    const MIN_TOGGLE_INTERVAL = 180; // ms - ajuste se quiser mais leniente
+
+    const isOpen = () =>
+      loginForm.classList.contains('active') ||
+      loginForm.getAttribute('aria-hidden') === 'false';
+
+    function attachOutside() {
+      if (outsideAttached) return;
+      document.addEventListener('pointerdown', outsideHandler, true);
+      document.addEventListener('touchstart', outsideHandler, { capture: true, passive: true });
+      outsideAttached = true;
+    }
+    function detachOutside() {
+      if (!outsideAttached) return;
+      document.removeEventListener('pointerdown', outsideHandler, true);
+      document.removeEventListener('touchstart', outsideHandler, { capture: true, passive: true });
+      outsideAttached = false;
+    }
+
+    function abrirLoginLocal() {
+      if (isOpen()) return;
+      loginForm.classList.add('active');
+      loginForm.setAttribute('aria-hidden', 'false');
+      setTimeout(() => loginForm.querySelector('#loginEmail')?.focus(), 70);
+      attachOutside();
+      lastToggleAt = Date.now();
+      const t = document.querySelector(togglerSelector);
+      if (t) t.textContent = 'Fechar';
+    }
+
+    function fecharLoginLocal() {
+      if (!isOpen()) return;
+      loginForm.classList.remove('active');
+      loginForm.setAttribute('aria-hidden', 'true');
+      detachOutside();
+      lastToggleAt = Date.now();
+      const t = document.querySelector(togglerSelector);
+      if (t) t.textContent = 'Admin';
+    }
+
+    function outsideHandler(ev) {
+      if (!isOpen()) return;
+      const tgt = ev.target;
+      if (!tgt) return;
+      if (loginForm.contains(tgt)) return;
+      if (tgt.closest && tgt.closest(togglerSelector)) return;
+      const now = Date.now();
+      if (now - lastToggleAt < MIN_TOGGLE_INTERVAL) return;
+      fecharLoginLocal();
+    }
+
+    function handleToggleClick(ev) {
+      ev.preventDefault();
+      const now = Date.now();
+      if (now - lastToggleAt < MIN_TOGGLE_INTERVAL) return;
+      if (isOpen()) fecharLoginLocal();
+      else abrirLoginLocal();
+    }
+
+    if (toggler) {
+      toggler.removeEventListener('click', handleToggleClick);
+      toggler.addEventListener('click', handleToggleClick);
+    }
+
+    if (isOpen()) attachOutside();
+
+    // Proteção extra: expõe janela de permissão apenas para o toggler (não ao avatar)
+    (function secureOpenWrapper() {
+      const realAbrirGlobal = window.abrirLogin || function () { abrirLoginLocal(); };
+      let allowOpen = false;
+
+      // wrapper global seguro
+      window.abrirLogin = function safeAbrirLogin() {
+        if (!allowOpen) {
+          console.log('abrirLogin bloqueada (não veio do toggler).');
+          return;
+        }
+        allowOpen = false;
+        try { realAbrirGlobal(); } catch (e) { abrirLoginLocal(); }
+      };
+
+      const togg = document.querySelector(togglerSelector);
+
+      if (togg) {
+        togg.removeEventListener('click', handleToggleClick);
+        togg.addEventListener('click', function (ev) {
+          ev?.preventDefault?.();
+          const now = Date.now();
+          if (now - lastToggleAt < MIN_TOGGLE_INTERVAL) return;
+          if (isOpen()) fecharLoginLocal();
+          else {
+            allowOpen = true;
+            abrirLoginLocal();
+          }
+        });
+      }
+    })();
+
+  })();
+
 }); // end DOMContentLoaded
 
 // ===============================
@@ -630,8 +721,6 @@ function voltarParaIntro() {
   if (intro) intro.style.display = "";
   if (main) main.style.display = "none";
 
-  // se essas variáveis estiverem no escopo global/externo, ok;
-  // caso contrário, substitua por document.getElementById(...)
   if (typeof nomeInput !== 'undefined' && nomeInput) {
     nomeInput.value = "";
     nomeInput.focus();
@@ -648,99 +737,13 @@ function voltarParaIntro() {
     }
   }
 
-  // garantir restauração manual do scroll do history (executar apenas uma vez no boot seria ideal)
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-  // rolar o container principal (se existir) e a janela para o topo
   if (main) {
-    // sem comportamento smooth aqui se quiser garantir posição imediata:
     main.scrollTo({ top: 0, behavior: 'smooth' });
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // garantir que o header entre em vista
   const header = document.querySelector('header') || document.getElementById('header');
   if (header) header.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
-
-// ===============================
-// Click-outside robusto para #loginForm (tratando toggler/avatar)
-// ===============================
-(function () {
-  const loginForm = document.getElementById('loginForm');
-  if (!loginForm) return console.warn('[login] #loginForm não encontrado (click-outside não habilitado)');
-
-  // seletor do elemento que reabre/fecha (avatar ou botão admin); ajuste se necessário
-  const reopenTogglerSelector = '#avatar, #toggleLoginBtn';
-
-  const isOpen = () =>
-    loginForm.classList.contains('active') ||
-    loginForm.getAttribute('aria-hidden') === 'false';
-
-  function abrirLogin() {
-    loginForm.classList.add('active');
-    loginForm.setAttribute('aria-hidden', 'false');
-    loginForm.querySelector('#loginEmail')?.focus();
-    attachOutsideListener();
-  }
-
-  function fecharLogin() {
-    loginForm.classList.remove('active');
-    loginForm.setAttribute('aria-hidden', 'true');
-    detachOutsideListener();
-  }
-
-  // handler robusto que ignora cliques dentro do form e no toggler(s)
-  function outsideHandler(ev) {
-    if (!isOpen()) return;
-    const tgt = ev.target;
-    // se clicou dentro do form, ignora
-    if (loginForm.contains(tgt)) return;
-    // se clicou num toggler (avatar ou toggleLoginBtn), ignora para evitar conflito
-    if (tgt.closest && tgt.closest(reopenTogglerSelector)) return;
-    // fora do form e dos togglers: fecha
-    fecharLogin();
-  }
-
-  let attached = false;
-  function attachOutsideListener() {
-    if (attached) return;
-    document.addEventListener('pointerdown', outsideHandler, true); // capture
-    attached = true;
-    // console.log('[login] outside listener attached');
-  }
-  function detachOutsideListener() {
-    if (!attached) return;
-    document.removeEventListener('pointerdown', outsideHandler, true);
-    attached = false;
-    // console.log('[login] outside listener detached');
-  }
-
-  // se existir um toggler local, substitui/integra seu handler para usar abrir/fechar
-  const togglerLocal = document.querySelector('#toggleLoginBtn');
-  if (togglerLocal) {
-    // substitui listeners antigos com clone apenas se ainda não exposto
-    const clone = togglerLocal.cloneNode(true);
-    togglerLocal.parentNode.replaceChild(clone, togglerLocal);
-    clone.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (isOpen()) fecharLogin(); else abrirLogin();
-    });
-  }
-
-  // se houver avatar que também abre o admin, integre sem duplicar handlers
-  const avatar = document.getElementById('avatar');
-  if (avatar) {
-    avatar.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (isOpen()) fecharLogin(); else abrirLogin();
-    });
-  }
-
-  // se o form iniciar aberto, anexa listener
-  if (isOpen()) attachOutsideListener();
-
-  // expõe funções se outro código quiser usá-las
-  window.abrirLogin = abrirLogin;
-  window.fecharLogin = fecharLogin;
-})();
