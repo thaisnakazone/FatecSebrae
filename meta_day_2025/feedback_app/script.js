@@ -1,5 +1,5 @@
 // ===============================
-// script.js — versão atualizada com seleção robusta de voz pt-BR
+// script.js — final com click-outside mobile-friendly (avatar removido como autorizador)
 // ===============================
 
 // ===============================
@@ -54,28 +54,6 @@ let bocaTimer = null;
 let nomeInput;
 let arrowEl;
 
-// --- função original de fallback que você já tinha (mantida) ---
-function pickFemalePtBrVoice(list) {
-  const ua = navigator.userAgent;
-  const isEdge = ua.includes("Edg");
-  const isChrome = ua.includes("Chrome") && !isEdge;
-  if ((!list || !list.length) && speechSynthesis.getVoices) list = speechSynthesis.getVoices();
-  list = list || [];
-  if (isEdge) {
-    return list.find(v => v.name === "Microsoft Maria - Portuguese (Brazil)")
-      || list.find(v => v.name === "Microsoft Francisca Online (Natural) - Portuguese (Brazil)")
-      || list.find(v => v.name.toLowerCase().includes("maria"))
-      || list.find(v => v.lang === "pt-BR");
-  }
-  if (isChrome) {
-    return list.find(v => v.name === "Google português do Brasil")
-      || list.find(v => v.name.toLowerCase().includes("google português"))
-      || null;
-  }
-  return list.find(v => v.lang === "pt-BR") || null;
-}
-
-// --- carregamento básico com log (mantive seu comportamento) ---
 function carregarVozes() {
   voices = speechSynthesis.getVoices() || [];
   voicesReady = voices.length > 0;
@@ -84,74 +62,6 @@ function carregarVozes() {
 speechSynthesis.onvoiceschanged = carregarVozes;
 setTimeout(carregarVozes, 150);
 
-// --- espera/garantia que as vozes carreguem (uso leve, timeout curto) ---
-function ensureVoicesLoaded(timeout = 900) {
-  return new Promise(resolve => {
-    const existing = speechSynthesis.getVoices() || [];
-    if (existing.length) {
-      resolve();
-      return;
-    }
-    let done = false;
-    const onChange = () => {
-      if (done) return;
-      done = true;
-      speechSynthesis.onvoiceschanged = null;
-      resolve();
-    };
-    speechSynthesis.onvoiceschanged = onChange;
-    setTimeout(() => {
-      if (done) return;
-      done = true;
-      speechSynthesis.onvoiceschanged = null;
-      resolve();
-    }, timeout);
-  });
-}
-
-// --- heurística robusta para escolher a melhor voz pt-BR disponível ---
-function pickBestPtBrVoice(list) {
-  list = list || (speechSynthesis.getVoices ? speechSynthesis.getVoices() : []);
-  if (!list || !list.length) return null;
-
-  const items = list.map(v => ({
-    v,
-    name: (v.name || '').toLowerCase(),
-    lang: (v.lang || '').toLowerCase(),
-    uri: (v.voiceURI || '').toLowerCase()
-  }));
-
-  // 1) correspondência exata observada no seu aparelho (sem parênteses)
-  const exactName = 'google português do brasil pt-br';
-  const exact = items.find(it => it.name.trim() === exactName);
-  if (exact) return exact.v;
-
-  // 2) correspondência por containters fortes (google + pt-BR)
-  const googlePt = items.find(it => /google/.test(it.name) && /pt[-_ ]?br/.test(it.lang));
-  if (googlePt) return googlePt.v;
-
-  // 3) nome contendo 'português' e lang pt
-  const portuguesName = items.find(it => (it.name.includes('português') || it.name.includes('portugues')) && /pt/.test(it.lang));
-  if (portuguesName) return portuguesName.v;
-
-  // 4) qualquer voz com lang pt-BR
-  const langPtBr = items.find(it => /pt[-_ ]?br/.test(it.lang));
-  if (langPtBr) return langPtBr.v;
-
-  // 5) qualquer voz com lang pt
-  const anyPt = items.find(it => /^pt/.test(it.lang));
-  if (anyPt) return anyPt.v;
-
-  // 6) por último, qualquer voz contendo 'google'
-  const anyGoogle = items.find(it => /google/.test(it.name));
-  if (anyGoogle) return anyGoogle.v;
-
-  return null;
-}
-
-// ===============================
-// Funções animar/parar boca (mantidas)
-// ===============================
 function animarBoca() {
   if (animacao) return;
   animacao = setInterval(() => {
@@ -184,37 +94,58 @@ function pararFallbackBoca() {
   if (el) el.classList.remove("falando");
 }
 
-// ===============================
-// função falar atualizada (garante carregamento e usa pickBestPtBrVoice)
-// ===============================
-async function falar(texto) {
-  await ensureVoicesLoaded(900);
-  voices = speechSynthesis.getVoices() || [];
-  voicesReady = voices.length > 0;
-
-  if (speechSynthesis.speaking || speechSynthesis.pending) {
-    try { speechSynthesis.cancel(); } catch (e) {}
+function pickFemalePtBrVoice(list) {
+  const ua = navigator.userAgent;
+  const isEdge = ua.includes("Edg");
+  const isChrome = ua.includes("Chrome") && !isEdge;
+  if ((!list || !list.length) && speechSynthesis.getVoices) list = speechSynthesis.getVoices();
+  list = list || [];
+  if (isEdge) {
+    return list.find(v => v.name === "Microsoft Maria - Portuguese (Brazil)")
+      || list.find(v => v.name === "Microsoft Francisca Online (Natural) - Portuguese (Brazil)")
+      || list.find(v => v.name.toLowerCase().includes("maria"))
+      || list.find(v => v.lang === "pt-BR");
   }
+  if (isChrome) {
+    return list.find(v => v.name === "Google português do Brasil")
+      || list.find(v => v.name.toLowerCase().includes("google português"))
+      || null;
+  }
+  return list.find(v => v.lang === "pt-BR") || null;
+}
 
+function falar(texto) {
   return new Promise((resolve) => {
+    if (!voicesReady) {
+      voices = speechSynthesis.getVoices() || [];
+      voicesReady = voices.length > 0;
+    }
+    if (!voicesReady) {
+      setTimeout(() => {
+        falar(texto).then(resolve);
+      }, 150);
+      return;
+    }
+
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      try { speechSynthesis.cancel(); } catch (e) {}
+    }
+
     const utter = new SpeechSynthesisUtterance(texto);
     utter.lang = "pt-BR";
     const ua = navigator.userAgent;
     const isEdge = ua.includes("Edg");
+    const isChrome = ua.includes("Chrome") && !isEdge;
     utter.rate = isEdge ? 1.2 : 1.0;
     utter.pitch = 1.05;
 
-    // escolhe a melhor voz pt-BR disponível, com fallback para pickFemalePtBrVoice
-    const voz = pickBestPtBrVoice(voices) || pickFemalePtBrVoice(voices) || null;
-    if (voz) {
-      try {
-        utter.voice = voz;
-        console.log("Voz selecionada:", voz.name, voz.lang);
-      } catch (e) {
-        console.warn("Não foi possível aplicar a voz selecionada:", e);
-      }
+    const voz = pickFemalePtBrVoice(voices);
+    if (voz && (isEdge || voz.name.includes("Google"))) {
+      utter.voice = voz;
+      console.log("Usando voz:", voz.name);
     } else {
-      console.log("Nenhuma voz pt-BR específica encontrada; usando voz padrão do navegador.");
+      if (voz) console.log("Voz detectada (não aplicada no Chrome):", voz.name);
+      console.log("Usando voz padrão do navegador.");
     }
 
     let started = false;
@@ -254,6 +185,57 @@ async function falar(texto) {
   });
 }
 
+function startTypewriterAndSpeech() {
+  const nome = (window.userName || "").trim();
+  const saudacao = nome ? `Olá, ${nome}! ` : "Olá! ";
+
+  const partes = [
+    { texto: saudacao + "Eu sou a ", tag: "span" },
+    { texto: "Lia", tag: "strong" },
+    { texto: "!", tag: "span" },
+    { texto: "<br>", tag: "br" },
+    { texto: "Adorei te ver no ", tag: "span" },
+    { texto: "Meta Day Fatec Sebrae", tag: "em" },
+    { texto: "!", tag: "span" },
+    { texto: "<br>", tag: "br" },
+    { texto: "Deixe seu feedback e contribua para experiências cada vez melhores.", tag: "span" }
+  ];
+
+  const liaMessage = document.getElementById("liaMessage");
+  if (liaMessage) {
+    liaMessage.style.opacity = "1";
+    const p = liaMessage.querySelector("p");
+    if (p) {
+      p.innerHTML = "";
+      let parteIndex = 0;
+      let charIndex = 0;
+      let currentNode = null;
+      function typeWriter() {
+        if (parteIndex < partes.length) {
+          const parte = partes[parteIndex];
+          if (parte.tag === "br") {
+            p.appendChild(document.createElement("br"));
+            parteIndex++; charIndex = 0; setTimeout(typeWriter, 200); return;
+          }
+          if (charIndex === 0) { currentNode = document.createElement(parte.tag); p.appendChild(currentNode); }
+          if (charIndex < parte.texto.length) {
+            currentNode.textContent += parte.texto.charAt(charIndex);
+            charIndex++; setTimeout(typeWriter, 40);
+          } else {
+            parteIndex++; charIndex = 0; setTimeout(typeWriter, 200);
+          }
+        }
+      }
+      typeWriter();
+    }
+  }
+
+  const textoLimpo = nome
+    ? `Olá, ${nome}! Eu sou a Lia! Adorei te ver no Meta Day Fatec Sebrae! Deixe seu feedback e contribua para experiências cada vez melhores.`
+    : `Olá! Eu sou a Lia! Adorei te ver no Meta Day Fatec Sebrae! Deixe seu feedback e contribua para experiências cada vez melhores.`;
+  falar(textoLimpo);
+}
+
 // ===============================
 // 4. ELEMENTOS DO DOM (queries leves; bindings feitos após DOMContentLoaded)
 // ===============================
@@ -271,11 +253,14 @@ const feedbackContainer = document.getElementById("feedbackContainer");
 let unsubscribe = null; // para onSnapshot
 
 window.addEventListener("DOMContentLoaded", () => {
+  // garante que a página inicie no estado intro (Admin escondido)
   document.body.classList.add("intro-active");
 
+  // re-queries que dependem do DOM
   nomeInput = document.getElementById("nomeInicial");
   arrowEl = document.querySelector(".arrow");
 
+  // --- bindings: checkbox "Entrar como anônimo(a)" (colar aqui) ---
   const entrarAnonimo = document.getElementById('entrarAnonimo');
 
   if (entrarAnonimo && nomeInput) {
@@ -283,21 +268,26 @@ window.addEventListener("DOMContentLoaded", () => {
 
     entrarAnonimo.addEventListener('change', (e) => {
       if (e.target.checked) {
+        // guarda valor atual e preenche com Pessoa anônima
         previousValue = nomeInput.value || '';
         nomeInput.value = 'Pessoa anônima';
         nomeInput.setAttribute('aria-label', 'Nome preenchido automaticamente como Pessoa anônima');
         nomeInput.readOnly = true;
         nomeInput.classList.add('disabled');
+
+        // garante que a lógica que mostra a seta rode
         if (typeof atualizarVisibilidadeSeta === 'function') {
           atualizarVisibilidadeSeta();
         } else {
           nomeInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
       } else {
+        // restaura e permite edição
         nomeInput.readOnly = false;
         nomeInput.classList.remove('disabled');
         nomeInput.value = previousValue;
         nomeInput.focus();
+
         if (typeof atualizarVisibilidadeSeta === 'function') {
           atualizarVisibilidadeSeta();
         } else {
@@ -307,15 +297,20 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     nomeInput.addEventListener('input', () => {
-      if (!nomeInput.readOnly) {}
+      if (!nomeInput.readOnly) {
+        // sem ação extra; atualizarVisibilidadeSeta já cuida
+      }
     });
   }
+  // --- fim bindings anon ---
 
+  // garante estado inicial de botões (logout escondido) com prioridade
   const loginBtnElInit = document.getElementById("loginBtn");
   const logoutBtnElInit = document.getElementById("logoutBtn");
   if (loginBtnElInit) loginBtnElInit.style.setProperty('display','inline-flex','important');
   if (logoutBtnElInit) logoutBtnElInit.style.setProperty('display','none','important');
 
+  // prepara o estado inicial da seta
   if (!nomeInput) console.warn("input #nomeInicial não encontrado no DOM");
   if (arrowEl) { arrowEl.classList.remove("visible"); arrowEl.style.display = "none"; }
 
@@ -338,6 +333,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
 
+    // expõe a função para ser chamada fora deste escopo (checkbox usa)
     window.atualizarVisibilidadeSeta = atualizarVisibilidadeSeta;
 
     atualizarVisibilidadeSeta();
@@ -391,22 +387,30 @@ window.addEventListener("DOMContentLoaded", () => {
 
   nomeInput?.focus();
 
+  // --- mover/renomear botão e garantir listeners corretos ---
   const toggleLoginBtnEl = document.getElementById("toggleLoginBtn");
   const topActions = document.querySelector(".top-bar .top-actions");
   const loginFormEl = document.getElementById("loginForm");
   const loginBtnEl = document.getElementById("loginBtn");
   const logoutBtnEl = document.getElementById("logoutBtn");
 
+  // garante aria-hidden inicial se faltar
   if (loginFormEl && !loginFormEl.hasAttribute("aria-hidden")) {
     loginFormEl.setAttribute("aria-hidden", loginFormEl.classList.contains("active") ? "false" : "true");
   }
 
   if (toggleLoginBtnEl) {
+    // renomeia e acessibilidade (texto inicial conforme estado)
     toggleLoginBtnEl.textContent = loginFormEl && loginFormEl.classList.contains("active") ? "Fechar" : "Admin";
     toggleLoginBtnEl.setAttribute("aria-label", "Administração");
+
+    // move para top-actions se existir (se o elemento já estiver dentro, appendChild apenas garante ordem)
     if (topActions && toggleLoginBtnEl.parentNode !== topActions) topActions.appendChild(toggleLoginBtnEl);
+
+    // substituímos a clonagem anterior; o handler robusto é adicionado mais abaixo
   }
 
+  // --- login / logout bindings (garantidos aqui) ---
   if (loginBtnEl) {
     loginBtnEl.addEventListener("click", async () => {
       const email = document.getElementById("loginEmail")?.value || "";
@@ -428,12 +432,16 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // utilitário: fala e resolve quando terminar
   function speakAndWait(text) {
+    // tenta reutilizar a função falar existente se ela retornar uma Promise
     if (typeof falar === 'function') {
       try {
         const r = falar(text);
         if (r && typeof r.then === 'function') return r;
-      } catch (e) {}
+      } catch (e) {
+        // se falar lançar, continua para fallback
+      }
     }
 
     return new Promise(resolve => {
@@ -447,6 +455,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- form envio feedback ---
   if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -477,9 +486,16 @@ window.addEventListener("DOMContentLoaded", () => {
         statusMsg.textContent = mensagem;
         statusMsg.style.color = "green";
 
+        // inicia a fala e aguarda seu término (se existir)
         await speakAndWait("Seu feedback foi enviado com sucesso!");
+
+        // garante que a mensagem permaneça visível por pelo menos 1500ms após a fala
         await new Promise(r => setTimeout(r, 1500));
+
+        // limpa a mensagem
         statusMsg.textContent = "";
+
+        // volta para a tela inicial para o próximo usuário
         voltarParaIntro();
 
       } catch (error) {
@@ -490,27 +506,32 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- Observador único para auth (mostra/oculta admin UI e, se admin, carrega feedbacks) ---
   onAuthStateChanged(auth, (user) => {
     console.log('onAuthStateChanged -> user =', user);
 
+    // re-obter elementos (garante que existam no escopo)
     const btn = document.getElementById("toggleLoginBtn");
     const loginBtnEl = document.getElementById("loginBtn");
     const logoutBtnEl = document.getElementById("logoutBtn");
     const userStatus = document.getElementById("userStatus");
     const feedbackList = document.getElementById("feedbackList");
 
+    // RESET PADRÃO: assume não logado (observer é a única fonte de verdade)
     if (btn) btn.style.setProperty('display','', 'important');
     if (loginBtnEl) loginBtnEl.style.setProperty('display','inline-flex','important');
     if (logoutBtnEl) logoutBtnEl.style.setProperty('display','none','important');
     if (userStatus) userStatus.textContent = "";
     if (feedbackList) feedbackList.style.setProperty('display','none','important');
 
+    // Se for admin, ajusta para mostrar área admin
     if (user && user.email === "fatecsebrae@metaday.com.br") {
       if (loginBtnEl) loginBtnEl.style.setProperty('display','none','important');
       if (logoutBtnEl) logoutBtnEl.style.setProperty('display','inline-flex','important');
       if (userStatus) userStatus.textContent = `Logado como: ${user.email}`;
       if (feedbackList) feedbackList.style.setProperty('display','block','important');
 
+      // subscribe aos feedbacks (se for o seu fluxo)
       const q = query(collection(db, "feedbacks"), orderBy("criadoEm", "desc"));
       if (unsubscribe) unsubscribe();
       unsubscribe = onSnapshot(q, (snapshot) => {
@@ -532,10 +553,12 @@ window.addEventListener("DOMContentLoaded", () => {
         });
       });
     } else {
+      // não admin: limpa subscription se houver
       if (unsubscribe) { unsubscribe(); unsubscribe = null; }
     }
   });
 
+  // --- botão ativar som (fallback) ---
   const btnAtivarSom = document.getElementById("ativarSom");
   if (btnAtivarSom) {
     btnAtivarSom.addEventListener("click", () => {
@@ -624,10 +647,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (isOpen()) attachOutside();
 
+    // Proteção extra: expõe janela de permissão apenas para o toggler (não ao avatar)
     (function secureOpenWrapper() {
       const realAbrirGlobal = window.abrirLogin || function () { abrirLoginLocal(); };
       let allowOpen = false;
 
+      // wrapper global seguro
       window.abrirLogin = function safeAbrirLogin() {
         if (!allowOpen) {
           console.log('abrirLogin bloqueada (não veio do toggler).');
@@ -661,57 +686,6 @@ window.addEventListener("DOMContentLoaded", () => {
 // ===============================
 // 8. Funções auxiliares usadas no DOM (fora do DOMContentLoaded)
 // ===============================
-function startTypewriterAndSpeech() {
-  const nome = (window.userName || "").trim();
-  const saudacao = nome ? `Olá, ${nome}! ` : "Olá! ";
-
-  const partes = [
-    { texto: saudacao + "Eu sou a ", tag: "span" },
-    { texto: "Lia", tag: "strong" },
-    { texto: "!", tag: "span" },
-    { texto: "<br>", tag: "br" },
-    { texto: "Adorei te ver no ", tag: "span" },
-    { texto: "Meta Day Fatec Sebrae", tag: "em" },
-    { texto: "!", tag: "span" },
-    { texto: "<br>", tag: "br" },
-    { texto: "Deixe seu feedback e contribua para experiências cada vez melhores.", tag: "span" }
-  ];
-
-  const liaMessage = document.getElementById("liaMessage");
-  if (liaMessage) {
-    liaMessage.style.opacity = "1";
-    const p = liaMessage.querySelector("p");
-    if (p) {
-      p.innerHTML = "";
-      let parteIndex = 0;
-      let charIndex = 0;
-      let currentNode = null;
-      function typeWriter() {
-        if (parteIndex < partes.length) {
-          const parte = partes[parteIndex];
-          if (parte.tag === "br") {
-            p.appendChild(document.createElement("br"));
-            parteIndex++; charIndex = 0; setTimeout(typeWriter, 200); return;
-          }
-          if (charIndex === 0) { currentNode = document.createElement(parte.tag); p.appendChild(currentNode); }
-          if (charIndex < parte.texto.length) {
-            currentNode.textContent += parte.texto.charAt(charIndex);
-            charIndex++; setTimeout(typeWriter, 40);
-          } else {
-            parteIndex++; charIndex = 0; setTimeout(typeWriter, 200);
-          }
-        }
-      }
-      typeWriter();
-    }
-  }
-
-  const textoLimpo = nome
-    ? `Olá, ${nome}! Eu sou a Lia! Adorei te ver no Meta Day Fatec Sebrae! Deixe seu feedback e contribua para experiências cada vez melhores.`
-    : `Olá! Eu sou a Lia! Adorei te ver no Meta Day Fatec Sebrae! Deixe seu feedback e contribua para experiências cada vez melhores.`;
-  falar(textoLimpo);
-}
-
 function abrirComLia() {
   const nomeAtual = (window.userName || nomeInput?.value?.trim() || "").trim();
   if (!nomeAtual) {
@@ -721,6 +695,7 @@ function abrirComLia() {
   }
   window.userName = nomeAtual;
 
+  // remove estado intro-active para exibir admin no topo
   document.body.classList.remove("intro-active");
 
   const intro = document.getElementById("intro");
@@ -734,13 +709,15 @@ function abrirComLia() {
   startTypewriterAndSpeech();
 }
 
+// --- função helper: volta para a tela inicial após envio ---
 function voltarParaIntro() {
   window.userName = "";
 
+  // adiciona estado intro-active para ocultar admin no topo
   document.body.classList.add("intro-active");
 
   const intro = document.getElementById("intro");
-  const main = document.getElementById("mainContent");
+  const main = document.getElementById("mainContent"); // única declaração de main
   if (intro) intro.style.display = "";
   if (main) main.style.display = "none";
 
