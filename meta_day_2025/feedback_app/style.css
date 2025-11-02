@@ -101,13 +101,13 @@ body.intro-active .top-bar .top-actions #loginForm {
 
 /* Intro principal */
 #intro {
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   text-align: center;
-  padding: 80px 20px 0;
+  padding: 40px 20px 0;
   box-sizing: border-box;
 }
 
@@ -131,6 +131,14 @@ body.intro-active .top-bar .top-actions #loginForm {
   font-size: 1em;              /* garante que não fique em itálico */
   line-height: 1;
   vertical-align: middle;
+}
+
+#intro .sorteio {
+  font-size: 0.8rem;
+  color: #b02323;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  display: inline-block;
 }
 
 /* BLOCO NOME */
@@ -224,7 +232,7 @@ body.intro-active .top-bar .top-actions #loginForm {
   transition: opacity 220ms ease;
   cursor: pointer;
   font-size: 2.5rem;
-  margin-top: 20px;
+  margin-top: 15px;
   animation: float 1.5s infinite ease-in-out;
 }
 
