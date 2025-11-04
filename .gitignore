@@ -223,6 +223,9 @@ node_modules/
 # =========================
 # Pastas locais que não devem ir para o GitHub
 # =========================
+meta_day_2025/feedback_app/lia-flyer.png
+meta_day_2025/feedback_app/lista_sorteio.csv
+meta_day_2025/feedback_app/lista_sorteio.json
 meta_day_2025/feedback_emulador/
 meta_day_2025/feedback_copia/
 meta_day_2025/felipe_tavares/
