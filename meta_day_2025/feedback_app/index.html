@@ -31,6 +31,317 @@
     </div>
   </header>
 
+  <!-- Modal compacto com texto à esquerda e vídeo à direita — apenas X para fechar -->
+  <style>
+    /* Backdrop */
+    #winnerModal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .18s ease;
+    }
+
+    /* Caixa interna (desktop mantido) */
+    #winnerModalInner {
+      background: #fff;
+      color: #111;
+      border-radius: 12px;
+      width: 760px;
+      max-width: calc(100% - 32px);
+      padding: 18px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.45);
+      position: relative;
+      max-height: 86vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+      box-sizing: border-box;
+      min-width: 0; /* evita que o grid imponha largura mínima */
+    }
+
+    /* garante que filhos do grid possam encolher corretamente */
+    #winnerModalInner > * {
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    /* Close X */
+    #closeWinner {
+      position: absolute;
+      right: 12px;
+      top: 3px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      color: #333;
+      z-index: 9999;
+      pointer-events: auto;
+      padding: 4px;
+      min-width: 0;
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: content-box;
+    }
+    #closeWinner:hover { background: rgba(0,0,0,0.04); }
+    #closeWinner:focus { outline: 4px solid #0b84ff88; border-radius: 6px; }
+
+    /* Texto */
+    .winner-text { padding-right: 8px; }
+    .winner-text h2 { margin: 0 0 8px; color: #0b3b66; font-size: 1.2rem; }
+    .winner-text p { margin: 0 0 12px; font-size: 0.98rem; line-height: 1.35; }
+
+    /* Wrapper vídeo (comportamento base; mantém proporções em desktop) */
+    .winner-video-wrapper {
+      width: 100%;
+      height: 100%;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 8px;
+      background: transparent;
+      flex: 1 1 0%;
+      box-sizing: border-box;
+      padding: 0;
+      min-width: 0; /* importante para evitar encolhimento dentro do grid */
+    }
+
+    /* Desktop — preservar quadro inteiro (sem cortar) */
+    @media (min-width: 821px) {
+      .winner-video-wrapper video {
+        width: 100%;
+        height: auto;
+        max-height: 56vh;
+        object-fit: contain;
+        display: block;
+        background: transparent;
+        min-width: 0;
+      }
+    }
+
+    /* Tablet / telas médias — preencher (cortar) para mais impacto visual */
+    @media (min-width: 481px) and (max-width: 820px) {
+      .winner-video-wrapper video {
+        width: 100%;
+        height: 100%;
+        max-height: 50vh;
+        object-fit: cover;
+        display: block;
+        background: transparent;
+        min-width: 0;
+      }
+    }
+
+    /* --- video-fit: classe semântica para forçar "fit" (sem cortes) --- */
+    .winner-video-wrapper.video-fit video {
+      object-fit: contain !important;
+      display: block !important;
+      min-width: 0 !important;
+    }
+
+    /* ajuste desktop/video-fit fallback */
+    .winner-video-wrapper.video-fit video {
+      width: 100% !important;
+      height: auto !important;
+      max-width: 100% !important;
+      max-height: 56vh;
+      margin: 0 auto !important;
+      box-sizing: border-box !important;
+    }
+
+    /* Mobile — garantir que o vídeo não encolha nem fique sob o X */
+    @media (max-width: 480px) {
+      /* faz o modal virar fluxo único e cria espaço para o X */
+      #winnerModalInner {
+        display: block !important;
+        width: calc(100% - 18px) !important;
+        padding-top: 44px !important; /* espaço para o botão X */
+        box-sizing: border-box !important;
+        max-height: 92vh !important;
+      }
+
+      .winner-text {
+        margin: 0 0 8px 0;
+        padding-right: 0;
+      }
+
+      .winner-video-wrapper {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        padding: 8px 0 !important;
+        max-height: 44vh !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        min-width: 0 !important;
+      }
+
+      /* comportamento mobile para vídeo; quando usar video-fit, width:auto evita esticar errado */
+      .winner-video-wrapper video {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        max-height: 40vh !important;
+        object-fit: contain !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+      }
+
+      /* quando tiver .video-fit no wrapper, evitar width:100% forçado para preservar proporção
+        e impedir que ele fique com largura muito pequena devido ao grid pai */
+      .winner-video-wrapper.video-fit video {
+        width: auto !important;
+        max-width: 100% !important;
+        max-height: 40vh !important;
+        object-fit: contain !important;
+      }
+
+      /* sobrescreve estilos inline que possam forçar dimensões */
+      .winner-video-wrapper video[style] {
+        height: auto !important;
+        width: 100% !important;
+        max-height: 40vh !important;
+      }
+
+      /* X compacto e sempre acima */
+      #closeWinner {
+        position: absolute !important;
+        right: 5px !important;
+        top: 1px !important;
+        z-index: 99999 !important;
+        padding: 4px !important;
+        font-size: 16px !important;
+        min-width: 0 !important;
+        width: auto !important;
+        box-sizing: content-box !important;
+      }
+    }
+
+    /* fallback / compatibilidade */
+    .winner-video-wrapper video { transform: translateZ(0); }
+  </style>
+
+  <div id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle" aria-hidden="true">
+    <div id="winnerModalInner" tabindex="-1">
+      <button id="closeWinner" aria-label="Fechar diálogo">✕</button>
+
+      <div class="winner-text">
+        <h2 id="winnerTitle">Parabéns, Bianca!</h2>
+        <p>Você ganhou um voucher eletrônico no valor de <strong>R$ 50,00</strong> para ser utilizado no site ou aplicativo do ingresso.com.</p>
+        <p>Em breve, entraremos em contato.</p>
+        <p>Agradecemos sua participação no Meta Day Fatec Sebrae!</p>
+      </div>
+
+      <div class="winner-video-wrapper video-fit">
+        <video id="winnerVideo" controls playsinline>
+          <source src="/videos/sorteio.mp4" type="video/mp4">
+          Seu navegador não suporta vídeo.
+        </video>
+      </div>
+
+      <div class="winner-foot" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const modal = document.getElementById('winnerModal');
+      const inner = document.getElementById('winnerModalInner');
+      const closeBtn = document.getElementById('closeWinner');
+      const video = document.getElementById('winnerVideo');
+      let lastFocused = null;
+      let focusable = [];
+      let closedByUser = false;   // se o usuário fechou, impede reabrir automático
+
+      if (!modal || !inner) { console.error('Modal não encontrado no DOM'); return; }
+
+      function openModal() {
+        if (closedByUser) return; // não reabre automaticamente se o usuário fechou
+        lastFocused = document.activeElement;
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        modal.removeAttribute('aria-hidden');
+        inner.focus({preventScroll:true});
+        try { video && video.play().catch(()=>{}); } catch(e){}
+        document.addEventListener('keydown', onKeyDown);
+        trapFocus();
+      }
+
+      function closeModal(byUser = true) {
+        if (byUser) closedByUser = true;
+        modal.style.opacity = '0';
+        setTimeout(()=> {
+          modal.style.visibility = 'hidden';
+          modal.setAttribute('aria-hidden','true');
+        }, 180);
+        try { video && (video.pause(), video.currentTime = 0); } catch(e){}
+        document.removeEventListener('keydown', onKeyDown);
+        restoreFocus();
+      }
+
+      function onKeyDown(e) {
+        if (e.key === 'Escape') closeModal(true);
+        if (e.key === 'Tab') keepFocusLoop(e);
+      }
+
+      function restoreFocus(){
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      }
+
+      function trapFocus(){
+        focusable = inner.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])');
+        focusable = Array.prototype.slice.call(focusable);
+        if (focusable.length) focusable[0].focus();
+      }
+
+      function keepFocusLoop(e){
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length -1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+
+      // Eventos
+      closeBtn && closeBtn.addEventListener('click', ()=> closeModal(true));
+      modal.addEventListener('click', function(e){
+        if (e.target === modal) closeModal(true);
+      });
+
+      // Expor funções para uso externo
+      window.showWinner = openModal;
+      window.closeWinner = ()=> closeModal(true);
+
+      // Se você estava usando auto-open no load, mantenha este listener
+      // mas agora respeita closedByUser para não reabrir se o usuário já fechou.
+      window.addEventListener('load', function(){
+        // abrir automaticamente apenas se não tiver sido fechado manualmente
+        setTimeout(openModal, 600);
+      });
+    })();
+  </script>
+
   <!-- Seção inicial -->
   <section id="intro">
     <h1>Deixe seu feedback</h1>
@@ -46,7 +357,8 @@
       </label>
     </div>
 
-    <h3 class="sorteio">O sorteio será realizado às 19h do dia 05/11/2025.</h3>
+    <h3 class="sorteio">O sorteio foi realizado às 19h do dia 05/11/2025.</h3>
+    <h3 class="sorteio">Agradecemos sua participação no Meta Day Fatec Sebrae!</h3>
 
     <!-- seta para baixo (oculta até definir o nome) -->
     <div class="arrow">&#x25BC;</div>
