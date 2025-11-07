@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sorteio do Meta Day Fatec Sebrae</title>
+  <style>
+    body { font-family: Inter,system-ui,Arial,sans-serif; background:#0b3b66; color:#fff;
+      display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:24px;box-sizing:border-box }
+    .card { background:linear-gradient(180deg,#123a5a 0%, #0b2d48 100%); padding:28px;border-radius:12px;
+      box-shadow:0 8px 40px rgba(0,0,0,0.45); width:920px; max-width:95%; text-align:center }
+    h1{ margin:0 0 12px; font-size:28px }
+    .ticker{ height:80px; display:flex;align-items:center;justify-content:center; overflow:hidden;
+      border-radius:8px; background:rgba(255,255,255,0.06); margin:12px 0; padding:8px }
+    .nameBig{ font-size:28px; font-weight:700; letter-spacing:0.4px }
+    .controls{ margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
+    /* respire entre controles e explicação */
+    .controls + .hint { margin-top:22px; }
+    button.primary{ background:#ffb703; color:#0b2d48; padding:12px 20px; border-radius:10px;
+      border:none; cursor:pointer; font-weight:800; font-size:16px }
+    button.secondary{ background:#0a84ff; color:#fff; padding:10px 16px; border-radius:8px; border:none; cursor:pointer; font-weight:700 }
+    button.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.12); color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer }
+    .result{ margin-top:18px; background:rgba(255,255,255,0.03); padding:14px; border-radius:10px;
+      display:none; flex-direction:column; gap:6px; align-items:center }
+    .label { font-size:13px; color:#cfe8ff; opacity:0.95; margin-bottom:6px }
+    .winnerContact{ font-size:18px; color:#e0f2ff; font-weight:700; min-height:1.2em; }
+    .small{ font-size:13px; color:#cfe8ff }
+    .hint{ font-size:13px; color:#cfe8ff; opacity:0.9 }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.6); color: #fff; padding:10px 14px; border-radius:8px; display:none; }
+    #confetti-canvas { position: fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:9999 }
+    /* relógio */
+    #recordClock {
+      margin-top: 12px;
+      font-family: Inter, system-ui, Arial, sans-serif;
+      font-size: 13px;
+      color: #cfe8ff;
+      background: rgba(255,255,255,0.02);
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: inline-block;
+      min-width: 200px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-live="polite">
+    <h1>Sorteio do Meta Day Fatec Sebrae</h1>
+
+    <div id="recordClock" title="Relógio para gravação">--/--/---- --:--:--</div>
+
+    <div class="ticker" id="ticker" style="margin-top:10px;">
+      <div class="nameBig" id="tickerName">— carregando participantes —</div>
+    </div>
+
+    <div class="controls">
+      <button id="startBtn" class="primary" aria-controls="ticker" disabled>Carregando...</button>
+      <button id="revealBtn" class="secondary" disabled title="Revela o contato completo em ambiente privado">Revelar contato (privado)</button>
+      <button id="resetBtn" class="ghost" style="display:none">Resetar</button>
+    </div>
+
+    <div class="hint">O sorteio rodará por 5 segundos e o(a) ganhador(a) será definido(a) automaticamente.</div>
+
+    <div class="result" id="result" aria-hidden="true">
+      <div class="label">Contato informado:</div>
+      <div class="winnerContact" id="winnerContact"></div>
+    </div>
+  </div>
+
+  <!-- confetti lib (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const LOCAL_JSON = 'lista_sorteio.json';
+    const participants = [];
+
+    function showToast(msg, ms = 2500) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      clearTimeout(t._hid);
+      t._hid = setTimeout(() => { t.style.display = 'none'; }, ms);
+    }
+
+    function ensureMasked(contact) {
+      if (!contact) return '';
+      if (contact.includes('@')) {
+        const parts = contact.split('@');
+        const user = parts[0] || '';
+        const dom = parts[1] || '';
+        return (user[0] || '*') + '***@' + dom;
+      }
+      const digits = contact.replace(/\D/g, '');
+      const last4 = digits.slice(-4);
+      return '(***) ****-' + last4;
+    }
+
+    function normalizeRecord(r) {
+      return {
+        document_name: r.document_name || r.documentName || null,
+        document_id: r.document_id || r.documentId || null,
+        nome_masked: (r.nome_masked && r.nome_masked.trim()) ? r.nome_masked.trim() : (r.nome || '').trim(),
+        nome: (r.nome || '').trim(),
+        contato_masked: (r.contato_masked && r.contato_masked.trim()) ? r.contato_masked.trim() : ensureMasked(r.contato || ''),
+        contato_full: r.contato || r.contato_full || null,
+        comentarios: r.comentarios || '',
+        id_opaco: r.id_opaco || r.id || null,
+        criadoEm: r.criadoEm || r.criado_ts || null
+      };
+    }
+
+    function extractContactFromComments(text) {
+      if (!text) return null;
+      const emailMatch = text.match(/([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/);
+      if (emailMatch) return { type: 'email', value: emailMatch[1] };
+      const phoneMatch = text.match(/(\(?\d{2}\)?[\s.\-]*9?\d{4}[\s.\-]*\d{4})/);
+      if (phoneMatch) {
+        const digits = phoneMatch[1].replace(/\D/g,'');
+        return { type: 'phone', value: digits };
+      }
+      return null;
+    }
+
+    // confetti init (protected)
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    let confettiFn = null;
+    let confettiActive = false;
+    try {
+      if (typeof confetti === 'function') {
+        confettiFn = confetti.create(confettiCanvas, { resize: true, useWorker: false });
+        console.info('confetti inicializado');
+      } else {
+        console.info('confetti lib não encontrada, fallback sem confete');
+      }
+    } catch (err) {
+      console.warn('Falha ao inicializar confetti:', err);
+      confettiFn = null;
+    }
+
+    function fireConfetti() {
+      if (!confettiFn || confettiActive) return;
+      confettiActive = true;
+      const duration = 1800;
+      const end = Date.now() + duration;
+      (function frame() {
+        confettiFn({ particleCount: 6, angle: 60, spread: 55, origin: { x: 0.25 }, colors: ['#ffb703','#0a84ff','#34d399','#f97316'] });
+        confettiFn({ particleCount: 6, angle: 120, spread: 55, origin: { x: 0.75 }, colors: ['#ffb703','#0a84ff','#34d399','#f97316'] });
+        if (Date.now() < end) requestAnimationFrame(frame);
+        else confettiActive = false;
+      })();
+    }
+
+    async function loadParticipantsLocal() {
+      try {
+        const res = await fetch(LOCAL_JSON, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const normalized = data.map(normalizeRecord);
+        participants.splice(0, participants.length, ...normalized);
+        console.log('participants carregados:', participants.length);
+        document.getElementById('tickerName').textContent = '';
+        const btn = document.getElementById('startBtn');
+        btn.disabled = participants.length === 0;
+        btn.textContent = participants.length ? 'Iniciar Sorteio' : 'Nenhum participante';
+      } catch (err) {
+        console.error('Falha ao carregar JSON local:', err);
+        document.getElementById('tickerName').textContent = 'Erro ao carregar participantes';
+        const btn = document.getElementById('startBtn');
+        btn.disabled = true;
+        btn.textContent = 'Erro';
+        showToast('Falha ao carregar lista local. Verifique se o arquivo está na mesma pasta e se está servindo via HTTP.');
+      }
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // DOM refs
+    const tickerName = document.getElementById('tickerName');
+    const startBtn = document.getElementById('startBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultEl = document.getElementById('result');
+    const winnerContactEl = document.getElementById('winnerContact');
+
+    let animInterval = null;
+    let autoTimeout = null;
+    let currentList = [];
+    let lastShownIndex = 0;
+    let finalWinner = null;
+
+    function startTicker() {
+      if (!participants || participants.length === 0) {
+        tickerName.textContent = 'Nenhum participante disponível';
+        return;
+      }
+      startBtn.disabled = true;
+      startBtn.textContent = 'Sorteando...';
+      revealBtn.disabled = true;
+      resultEl.style.display = 'none';
+      finalWinner = null;
+      currentList = shuffle(participants);
+      lastShownIndex = 0;
+
+      animInterval = setInterval(() => {
+        const p = currentList[lastShownIndex];
+        // ticker shows masked name if present, else masked contact
+        tickerName.textContent = (p.nome_masked && p.nome_masked.trim()) ? p.nome_masked : (p.contato_masked || '—');
+        lastShownIndex = (lastShownIndex + 1) % currentList.length;
+      }, 80);
+
+      if (autoTimeout) clearTimeout(autoTimeout);
+      autoTimeout = setTimeout(() => {
+        if (animInterval) { clearInterval(animInterval); animInterval = null; }
+        const winner = pickWinnerRandom();
+        if (winner) {
+          revealWinner(winner);
+          try { fireConfetti(); } catch (e) { console.warn('confetti erro', e); }
+        }
+        startBtn.textContent = 'Sorteio concluído';
+        revealBtn.disabled = false;
+        resetBtn.style.display = 'inline-block';
+      }, 5000);
+    }
+
+    function pickWinnerRandom() {
+      const pool = participants.slice();
+      if (pool.length === 0) return null;
+      const idx = Math.floor(Math.random() * pool.length);
+      return pool[idx];
+    }
+
+    function revealWinner(winner) {
+      finalWinner = winner;
+      winnerContactEl.textContent = winner.contato_masked || ensureMasked(winner.contato_full || '');
+      resultEl.style.display = 'block';
+      // keep ticker displaying masked name/contact for context
+      tickerName.textContent = (winner.nome_masked && winner.nome_masked.trim()) ? winner.nome_masked : (winner.contato_masked || '—');
+      resultEl.setAttribute('aria-hidden', 'false');
+    }
+
+    async function handleRevealClick() {
+      if (!finalWinner) {
+        showToast('Nenhum vencedor definido ainda', 1800);
+        return;
+      }
+
+      // try local full contact first
+      let contactFull = finalWinner.contato_full || null;
+      const fullName = finalWinner.nome && finalWinner.nome.trim() ? finalWinner.nome.trim() : null;
+
+      if (!contactFull && finalWinner.comentarios) {
+        const found = extractContactFromComments(finalWinner.comentarios);
+        if (found) {
+          contactFull = (found.type === 'phone') ? found.value.replace(/\D/g,'') : found.value;
+        }
+      }
+
+      if (contactFull) {
+        // format phone simple display (if digits)
+        const digits = contactFull.replace(/\D/g,'');
+        const isPhone = /^\d{10,13}$/.test(digits);
+        const display = isPhone ? ('+' + digits) : contactFull;
+        winnerContactEl.textContent = display;
+        await copyToClipboard(`${fullName || ''} — ${display}`);
+        showToast('Contato revelado e copiado para a área de transferência', 3200);
+        return;
+      }
+
+      showToast('Contato completo não disponível localmente. Configure lookup seguro se necessário.', 3800);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          return true;
+        }
+      } catch (err) {
+        console.error('Falha ao copiar para clipboard:', err);
+        return false;
+      }
+    }
+
+    function resetAll() {
+      if (animInterval) clearInterval(animInterval);
+      if (autoTimeout) clearTimeout(autoTimeout);
+      animInterval = null;
+      autoTimeout = null;
+      finalWinner = null;
+      resultEl.style.display = 'none';
+      tickerName.textContent = '';
+      startBtn.disabled = false;
+      startBtn.textContent = 'Iniciar Sorteio';
+      revealBtn.disabled = true;
+      resetBtn.style.display = 'none';
+      winnerContactEl.textContent = '';
+    }
+
+    // events
+    startBtn.addEventListener('click', startTicker);
+    revealBtn.addEventListener('click', handleRevealClick);
+    resetBtn.addEventListener('click', resetAll);
+    startBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startTicker(); } });
+
+    // load and enable UI
+    loadParticipantsLocal();
+
+    // cleanup
+    window.addEventListener('beforeunload', () => {
+      if (animInterval) clearInterval(animInterval);
+      if (autoTimeout) clearTimeout(autoTimeout);
+      stopClock();
+    });
+
+    // helper: extract contact from comments (email or phone)
+    function extractContactFromComments(text) {
+      if (!text) return null;
+      const emailMatch = text.match(/([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/);
+      if (emailMatch) return { type: 'email', value: emailMatch[1] };
+      const phoneMatch = text.match(/(\(?\d{2}\)?[\s.\-]*9?\d{4}[\s.\-]*\d{4})/);
+      if (phoneMatch) {
+        const digits = phoneMatch[1].replace(/\D/g,'');
+        return { type: 'phone', value: digits };
+      }
+      return null;
+    }
+
+    // ---------- Relógio para gravação (segundos) ----------
+    function pad(n){ return n < 10 ? '0' + n : String(n); }
+    function formatDateWithSeconds(d){
+      const day = pad(d.getDate());
+      const month = pad(d.getMonth() + 1);
+      const year = d.getFullYear();
+      const hh = pad(d.getHours());
+      const mm = pad(d.getMinutes());
+      const ss = pad(d.getSeconds());
+      return `${day}/${month}/${year} ${hh}:${mm}:${ss}`;
+    }
+    const clockEl = document.getElementById('recordClock');
+    let clockInterval = null;
+    function startClock(){
+      if (!clockEl) return;
+      function tick(){
+        const now = new Date();
+        clockEl.textContent = formatDateWithSeconds(now);
+      }
+      tick();
+      if (clockInterval) clearInterval(clockInterval);
+      clockInterval = setInterval(tick, 250);
+    }
+    function stopClock(){ if (clockInterval) clearInterval(clockInterval); clockInterval = null; }
+    startClock();
+  </script>
+</body>
+</html>
