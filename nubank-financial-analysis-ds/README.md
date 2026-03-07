@@ -1,6 +1,6 @@
 # Nubank Financial Analysis DS
 
-Projeto de Ciência de Dados desenvolvido na disciplina da Fatec Sebrae.
+Projeto de Ciência de Dados desenvolvido na Fatec Sebrae.
 
 ## Estrutura
 - /data → dados brutos e processados
