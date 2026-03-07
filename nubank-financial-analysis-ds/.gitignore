@@ -1,0 +1,18 @@
+# Ignorar arquivos temporários
+*.log
+*.tmp
+
+# Ignorar dados grandes
+/data/raw/*
+/data/processed/*
+
+# Ignorar notebooks checkpoints
+.ipynb_checkpoints/
+
+# Ignorar ambientes virtuais
+venv/
+.env
+
+# Ignorar arquivos do sistema
+.DS_Store
+Thumbs.db
