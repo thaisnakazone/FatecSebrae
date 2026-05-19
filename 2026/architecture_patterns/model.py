@@ -2,7 +2,7 @@ import sqlite3
 
 class SuspeitoModel:
     def __init__(self):
-        self.db_name = 'vault_original.db'
+        self.db_name = 'data/vault_original.db'
         self._criar_tabela()
 
     def _criar_tabela(self):
