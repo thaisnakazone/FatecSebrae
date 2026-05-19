@@ -1,5 +1,5 @@
 from presenter import SuspeitoPresenter
-from fake_view import FakeView
+from .fake_view import FakeView
 
 fake_view = FakeView([
     "Fulano",     # nome
