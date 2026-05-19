@@ -34,12 +34,15 @@ class SuspeitoPresenter:
     def listar_suspeitos(self):
         # O Presenter busca os dados brutos no Model
         dados_brutos = self.model.listar_todos()
-       
+        
         # O Presenter TRADUZ os dados para um formato que a View entenda
-        # (Isso é a essência do MVP)
         dados_limpos = [
             f"ID #{s[0]}: {s[1].upper()} (Delito: {s[2]}) | Nível: {s[3]}"
             for s in dados_brutos
         ]
-       
+        
         self.view.mostrar_tabela_suspeitos(dados_limpos)
+
+        # Contar e exibir total
+        total = len(dados_brutos)
+        self.view.exibir_total(total)

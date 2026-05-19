@@ -13,3 +13,6 @@ class SuspeitoView:
 
     def obter_input_usuario(self, prompt):
         return input(prompt)
+    
+    def exibir_total(self, total):
+        print(f"\nTotal de suspeitos cadastrados: {total}")
