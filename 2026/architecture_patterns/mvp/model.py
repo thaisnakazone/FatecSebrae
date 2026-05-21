@@ -1,8 +1,11 @@
 import sqlite3
+import os
 
 class SuspeitoModel:
     def __init__(self):
-        self.db_name = 'vault_original.db'
+        base_dir = os.path.dirname(__file__)
+        db_path = os.path.join(base_dir, "data", "vault_mvp.db")
+        self.db_name = db_path
         self._criar_tabela()
 
     def _criar_tabela(self):
