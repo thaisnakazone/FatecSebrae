@@ -220,6 +220,9 @@ node_modules/
 .env
 .env.*
 
+# Ignora workflow de deploy automático para Firebase Hosting
+.github/workflows/firebase-hosting.yml
+
 # =========================
 # Pastas locais que não devem ir para o GitHub
 # =========================
