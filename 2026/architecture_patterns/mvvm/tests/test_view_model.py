@@ -12,7 +12,7 @@ vm.adicionar_novo("Beltrano", "Roubo", "1000")
 print("Status:", vm.mensagem_status)
 
 print("\n=== TESTE 3: NÍVEL INVÁLIDO (NÃO NUMÉRICO) ===")
-vm.adicionar_novo("Ciclano", "Fraude", "abc")
+vm.adicionar_novo("Sicrano", "Fraude", "abc")
 print("Status:", vm.mensagem_status)
 
 print("\n=== TESTE 4: ALERTA DE MUITOS CASOS ===")
